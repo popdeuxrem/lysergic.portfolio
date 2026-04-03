@@ -1,7 +1,7 @@
-import * as THREE from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RigidBody } from '@react-three/rapier'
+import { Grid } from '@react-three/drei'
 
 const ZONES = [
   { pos: [-25, 0, -25], color: '#cc44ff', emissive: '#880066', label: 'about' },
@@ -20,13 +20,25 @@ function ZoneMarker({ pos, color, emissive }) {
 
   return (
     <group position={pos}>
+      {/* Bright glowing pillar */}
       <mesh position={[0, 5, 0]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 10, 8]} />
-        <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={1.5} />
+        <cylinderGeometry args={[0.5, 0.5, 10, 8]} />
+        <meshStandardMaterial 
+          color={color} 
+          emissive={emissive} 
+          emissiveIntensity={2}
+          toneMapped={false}
+        />
       </mesh>
+      {/* Floating ring */}
       <mesh ref={ringRef} position={[0, 3, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[3, 0.15, 8, 32]} />
-        <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={2} />
+        <torusGeometry args={[4, 0.2, 8, 32]} />
+        <meshStandardMaterial 
+          color={color} 
+          emissive={emissive} 
+          emissiveIntensity={3}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   )
@@ -36,42 +48,57 @@ export function Environment() {
   return (
     <>
       <color attach="background" args={['#050510']} />
-      <fog attach="fog" args={['#050510', 0.012]} />
+      <fog attach="fog" args={['#050510', 0.015]} />
 
-      <ambientLight intensity={0.3} />
-      <hemisphereLight args={['#8866cc', '#221133', 1.2]} />
-      <directionalLight
-        position={[30, 50, 20]}
-        intensity={3}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={300}
-        shadow-camera-left={-80}
-        shadow-camera-right={80}
-        shadow-camera-top={80}
-        shadow-camera-bottom={-80}
-        shadow-bias={-0.001}
-      />
-      <directionalLight position={[-20, 20, -20]} intensity={1} color="#9966ff" />
-
+      {/* Ground - highly visible */}
       <RigidBody type="fixed" colliders="cuboid">
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <planeGeometry args={[300, 300]} />
-          <meshStandardMaterial color="#110a22" roughness={0.9} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
+          <planeGeometry args={[500, 500]} />
+          <meshStandardMaterial 
+            color="#1a0a2e" 
+            roughness={0.8}
+            metalness={0.2}
+          />
         </mesh>
       </RigidBody>
 
-      <gridHelper args={[300, 60, '#6633aa', '#331155']} position={[0, 0.01, 0]} />
+      {/* Visible grid - Drei Grid with strong colors */}
+      <Grid
+        position={[0, 0.01, 0]}
+        args={[500, 500]}
+        cellSize={2}
+        cellThickness={1}
+        cellColor="#442266"
+        sectionSize={10}
+        sectionThickness={1.5}
+        sectionColor="#8844cc"
+        fadeDistance={100}
+        fadeStrength={1}
+        followCamera={false}
+        infiniteGrid={true}
+      />
 
+      {/* Zone markers */}
       {ZONES.map((zone, i) => (
         <ZoneMarker key={i} pos={zone.pos} color={zone.color} emissive={zone.emissive} />
       ))}
 
-      <pointLight position={[-25, 6, -25]} color="#cc44ff" intensity={6} distance={50} />
-      <pointLight position={[25, 6, -25]} color="#44ccff" intensity={6} distance={50} />
-      <pointLight position={[-25, 6, 25]} color="#ff44aa" intensity={6} distance={50} />
-      <pointLight position={[25, 6, 25]} color="#44ffaa" intensity={6} distance={50} />
+      {/* Neon point lights at each zone */}
+      <pointLight position={[-25, 8, -25]} color="#cc44ff" intensity={15} distance={60} castShadow />
+      <pointLight position={[25, 8, -25]} color="#44ccff" intensity={15} distance={60} castShadow />
+      <pointLight position={[-25, 8, 25]} color="#ff44aa" intensity={15} distance={60} castShadow />
+      <pointLight position={[25, 8, 25]} color="#44ffaa" intensity={15} distance={60} castShadow />
+
+      {/* Additional scene lights - not as aggressive as before */}
+      <hemisphereLight args={['#8866cc', '#221133', 0.5]} />
+      <directionalLight
+        position={[30, 50, 20]}
+        intensity={1}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-far={200}
+      />
     </>
   )
 }

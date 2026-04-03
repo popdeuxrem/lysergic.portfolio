@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
-import { Html } from '@react-three/drei'
+import { PerspectiveCamera, Html } from '@react-three/drei'
 import { Suspense, useState, useEffect } from 'react'
 import { Experience } from './components/Experience'
 import { Overlay } from './components/Overlay'
@@ -11,27 +11,37 @@ function Loader() {
   return (
     <Html center>
       <div style={{
-        background: 'rgba(5, 5, 16, 0.95)',
-        border: '1px solid rgba(102, 68, 170, 0.5)',
-        borderRadius: 12,
-        padding: '24px 40px',
+        background: 'rgba(5, 5, 16, 0.98)',
+        border: '2px solid #ff00ff',
+        borderRadius: 8,
+        padding: '32px 48px',
         fontFamily: 'monospace',
-        color: '#cc88ff',
+        color: '#ff00ff',
         textAlign: 'center',
-        minWidth: 280
+        minWidth: 320
       }}>
-        <div style={{ fontSize: '0.75rem', color: '#6644aa', marginBottom: 8, letterSpacing: 2 }}>
-          LY$ERGIC
+        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: 12 }}>
+          LOADING_3D_ASSETS...
         </div>
-        <div style={{ fontSize: '1rem', color: '#cc88ff' }}>
-          {'> '}INITIALIZING SYSTEMS<span className="blink">_</span>
+        <div style={{ fontSize: '0.8rem', color: '#888' }}>
+          If this persists, check console for errors
         </div>
-        <style>{`
-          .blink { animation: blink 1s step-end infinite; }
-          @keyframes blink { 50% { opacity: 0; } }
-        `}</style>
       </div>
     </Html>
+  )
+}
+
+function DefaultLights() {
+  return (
+    <>
+      <ambientLight intensity={1.5} />
+      <directionalLight 
+        position={[10, 10, 5]} 
+        intensity={2} 
+        castShadow
+      />
+      <pointLight position={[0, 10, 0]} intensity={1} color="#ffffff" />
+    </>
   )
 }
 
@@ -40,6 +50,7 @@ export default function App() {
   const [started, setStarted] = useState(false)
 
   useEffect(() => {
+    console.log('[App] Mounting...')
     setReady(true)
   }, [setReady])
 
@@ -56,16 +67,32 @@ export default function App() {
         <Canvas
           shadows
           flat
-          dpr={[1, 1.5]}
+          dpr={[1, 2]}
           gl={{
             antialias: true,
             alpha: false,
-            powerPreference: 'high-performance'
+            powerPreference: 'high-performance',
+            failIfMajorPerformanceCaveat: false
           }}
-          camera={{ position: [0, 12, 20], fov: 35, near: 0.1, far: 500 }}
         >
+          <PerspectiveCamera 
+            makeDefault 
+            position={[15, 15, 15]} 
+            fov={50} 
+            near={0.1} 
+            far={1000}
+            onUpdate={c => c.lookAt(0, 0, 0)}
+          />
+          
+          {/* Default lights - ALWAYS visible, not in Suspense */}
+          <DefaultLights />
+          
           <Suspense fallback={<Loader />}>
-            <Physics gravity={[0, -9.81, 0]} timeStep="vary">
+            <Physics 
+              gravity={[0, -9.81, 0]} 
+              timeStep="vary"
+              paused={false}
+            >
               <Experience started={started} />
             </Physics>
           </Suspense>

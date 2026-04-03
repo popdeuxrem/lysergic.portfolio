@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RigidBody, useRapier } from '@react-three/rapier'
 import { useGameStore } from '../store'
@@ -24,11 +24,6 @@ export function Vehicle() {
   const setCarPosition = useGameStore(s => s.setCarPosition)
   const setSpeed = useGameStore(s => s.setSpeed)
   const [vehicle, setVehicle] = useState(null)
-  const [hasPhysics, setHasPhysics] = useState(false)
-
-  const chassisHandle = useCallback((ref) => {
-    chassisRef.current = ref
-  }, [])
 
   useEffect(() => {
     if (!chassisRef.current || !world) return
@@ -57,20 +52,14 @@ export function Vehicle() {
       controller.setWheelSuspensionStiffness(0, 15)
       controller.setWheelMaxSuspensionTravel(0, 0.3)
       setVehicle(controller)
-      setHasPhysics(true)
+      console.log('[Vehicle] Physics initialized ✓')
     } catch (e) {
-      console.warn('[Vehicle] Physics init failed, using kinematic fallback:', e)
-      setHasPhysics(false)
-    }
-
-    return () => {
-      try { if (vehicle) world.removeVehicleController(vehicle) } catch(e) {}
+      console.warn('[Vehicle] Physics failed:', e)
     }
   }, [world])
 
   useFrame(() => {
     if (!chassisRef.current) return
-
     const chassis = chassisRef.current.raw()
     if (!chassis) return
 
@@ -97,27 +86,69 @@ export function Vehicle() {
 
   return (
     <RigidBody
-      ref={chassisHandle}
+      ref={chassisRef}
       type="dynamic"
       colliders="cuboid"
       mass={800}
-      position={[0, 1, 0]}
+      position={[0, 2, 0]}
       linearDamping={0.5}
       angularDamping={0.8}
     >
       <group>
+        {/* Main body - bright pink with emissive glow */}
         <mesh castShadow position={[0, 0, 0]}>
           <boxGeometry args={[2.2, 0.8, 4.5]} />
-          <meshStandardMaterial color="#cc44ff" emissive="#440066" emissiveIntensity={0.6} metalness={0.8} roughness={0.2} />
+          <meshStandardMaterial 
+            color="#ff00ff" 
+            emissive="#ff00ff" 
+            emissiveIntensity={0.8}
+            toneMapped={false}
+          />
         </mesh>
+        
+        {/* Cabin */}
         <mesh castShadow position={[0, 0.7, -0.3]}>
           <boxGeometry args={[1.8, 0.7, 2.2]} />
-          <meshStandardMaterial color="#221133" metalness={0.5} roughness={0.3} />
+          <meshStandardMaterial 
+            color="#220044" 
+            metalness={0.6}
+            roughness={0.3}
+          />
         </mesh>
-        <pointLight position={[-0.7, 0.3, 2.3]} color="#ffffff" intensity={5} distance={15} />
-        <pointLight position={[0.7, 0.3, 2.3]} color="#ffffff" intensity={5} distance={15} />
-        <pointLight position={[-0.7, 0.3, -2.3]} color="#ff0000" intensity={3} distance={8} />
-        <pointLight position={[0.7, 0.3, -2.3]} color="#ff0000" intensity={3} distance={8} />
+
+        {/* Wheels - visible cylinders */}
+        {[[-1.2, -0.4, 1.5], [1.2, -0.4, 1.5], [-1.2, -0.4, -1.5], [1.2, -0.4, -1.5]].map((pos, i) => (
+          <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.4, 0.4, 0.35, 16]} />
+            <meshStandardMaterial color="#111111" roughness={0.9} />
+          </mesh>
+        ))}
+
+        {/* Headlights - white glowing */}
+        <mesh position={[-0.7, 0.2, 2.3]}>
+          <sphereGeometry args={[0.15]} />
+          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
+        </mesh>
+        <mesh position={[0.7, 0.2, 2.3]}>
+          <sphereGeometry args={[0.15]} />
+          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
+        </mesh>
+
+        {/* Taillights - red glowing */}
+        <mesh position={[-0.7, 0.2, -2.3]}>
+          <sphereGeometry args={[0.15]} />
+          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
+        </mesh>
+        <mesh position={[0.7, 0.2, -2.3]}>
+          <sphereGeometry args={[0.15]} />
+          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
+        </mesh>
+
+        {/* Car lights */}
+        <pointLight position={[-0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
+        <pointLight position={[0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
+        <pointLight position={[-0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
+        <pointLight position={[0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
       </group>
     </RigidBody>
   )
