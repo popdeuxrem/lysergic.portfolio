@@ -7,7 +7,7 @@ export function Hero() {
     <section className="container-shell relative py-16 md:py-24 lg:py-28">
       <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div>
-          <p className="section-label">Systems that govern themselves</p>
+          <p className="section-label">{hero.label}</p>
           <h1 className="display-title mt-5 max-w-4xl">{hero.name}</h1>
           <p className="mt-3 text-xl text-accent md:text-2xl">{hero.title}</p>
           <p className="mt-8 max-w-3xl text-base leading-8 text-muted md:text-lg">

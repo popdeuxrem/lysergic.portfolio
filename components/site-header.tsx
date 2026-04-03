@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { navigation } from '@/content/site';
+import { navigation, hero } from '@/content/site';
 
 export function SiteHeader() {
   return (
@@ -20,10 +20,10 @@ export function SiteHeader() {
           ))}
         </nav>
         <Link
-          href="/contact"
+          href={hero.contactCta.href}
           className="rounded-full border border-white/10 px-4 py-2 text-sm text-text transition hover:border-accent/40 hover:bg-white/5"
         >
-          Initiate Engagement
+          {hero.contactCta.label}
         </Link>
       </div>
     </header>
