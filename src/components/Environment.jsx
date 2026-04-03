@@ -1,9 +1,8 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Grid, useGLTF } from '@react-three/drei'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
-import { useGameStore } from '../store'
 
 const ZONES = [
   { pos: [-25, 0, -25], color: '#ff00ff', emissive: '#ff00ff', label: 'about' },
@@ -84,26 +83,18 @@ function ProceduralFallback() {
   )
 }
 
-export function Environment() {
+function EnvironmentModel() {
   const { scene } = useThree()
-  const [modelError, setModelError] = useState(false)
-  let gltf = null
+  const gltf = useGLTF('/models/environment.glb', true, true, (loader) => {
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('/draco/')
+    loader.setDRACOLoader(dracoLoader)
 
-  try {
-    gltf = useGLTF('/models/environment.glb', true, true, (loader) => {
-      const dracoLoader = new DRACOLoader()
-      dracoLoader.setDecoderPath('/draco/')
-      loader.setDRACOLoader(dracoLoader)
-
-      const ktx2Loader = new KTX2Loader()
-      ktx2Loader.setTranscoderPath('/basis/')
-      ktx2Loader.detectSupport(scene)
-      loader.setKTX2Loader(ktx2Loader)
-    })
-  } catch (e) {
-    console.warn('[Environment] Model load error:', e.message)
-    setModelError(true)
-  }
+    const ktx2Loader = new KTX2Loader()
+    ktx2Loader.setTranscoderPath('/basis/')
+    ktx2Loader.detectSupport(scene)
+    loader.setKTX2Loader(ktx2Loader)
+  })
 
   useEffect(() => {
     if (gltf) {
@@ -116,17 +107,14 @@ export function Environment() {
     }
   }, [gltf])
 
-  if (modelError || !gltf) {
-    return <ProceduralFallback />
-  }
+  return <primitive object={gltf.scene} />
+}
 
+export function Environment() {
   return (
     <>
-      <color attach="background" args={['#050510']} />
-      <fog attach="fog" args={['#050510', 0.015]} />
-      <primitive object={gltf.scene} />
+      <ProceduralFallback />
+      <EnvironmentModel />
     </>
   )
 }
-
-useGLTF.preload('/models/environment.glb')

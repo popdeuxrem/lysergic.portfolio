@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, Suspense } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
@@ -65,31 +65,39 @@ function FallbackCar() {
   )
 }
 
+function CarModel() {
+  const { scene } = useThree()
+  const gltf = useGLTF('/models/car.glb', true, true, (loader) => {
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('/draco/')
+    loader.setDRACOLoader(dracoLoader)
+
+    const ktx2Loader = new KTX2Loader()
+    ktx2Loader.setTranscoderPath('/basis/')
+    ktx2Loader.detectSupport(scene)
+    loader.setKTX2Loader(ktx2Loader)
+  })
+
+  useEffect(() => {
+    if (gltf) {
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+    }
+  }, [gltf])
+
+  return <primitive object={gltf.scene} scale={1} />
+}
+
 export function Vehicle() {
   const groupRef = useRef()
-  const { scene } = useThree()
   const setCarPosition = useGameStore(s => s.setCarPosition)
   const setSpeed = useGameStore(s => s.setSpeed)
   const velocity = useRef({ x: 0, y: 0, z: 0 })
   const rotation = useRef(0)
-  const [modelError, setModelError] = useState(false)
-
-  let gltf = null
-  try {
-    gltf = useGLTF('/models/car.glb', true, true, (loader) => {
-      const dracoLoader = new DRACOLoader()
-      dracoLoader.setDecoderPath('/draco/')
-      loader.setDRACOLoader(dracoLoader)
-
-      const ktx2Loader = new KTX2Loader()
-      ktx2Loader.setTranscoderPath('/basis/')
-      ktx2Loader.detectSupport(scene)
-      loader.setKTX2Loader(ktx2Loader)
-    })
-  } catch (e) {
-    console.warn('[Vehicle] Model load error:', e.message)
-    setModelError(true)
-  }
 
   useFrame((_, delta) => {
     if (!groupRef.current) return
@@ -130,13 +138,7 @@ export function Vehicle() {
 
   return (
     <group ref={groupRef} position={[0, 0.5, 0]}>
-      {modelError || !gltf ? (
-        <FallbackCar />
-      ) : (
-        <primitive object={gltf.scene} scale={1} />
-      )}
+      <CarModel />
     </group>
   )
 }
-
-useGLTF.preload('/models/car.glb')
