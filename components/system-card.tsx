@@ -1,38 +1,69 @@
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { SystemEntry } from '@/content/systems';
 
-const statusLabels: Record<string, string> = {
-  production: 'Production',
-  active: 'Active',
-  iterating: 'Iterating',
-  development: 'Development',
+const statusConfig: Record<string, { label: string; color: string }> = {
+  production: { label: 'Production', color: 'bg-green-500' },
+  active: { label: 'Active', color: 'bg-cyan-400' },
+  iterating: { label: 'Iterating', color: 'bg-yellow-400' },
+  development: { label: 'Development', color: 'bg-orange-400' },
 };
 
 export function SystemCard({ entry }: { entry: SystemEntry }) {
+  const status = statusConfig[entry.status] ?? { label: entry.status, color: 'bg-muted' };
+
   return (
-    <article className="panel flex h-full flex-col p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent2">{entry.categoryLabel}</p>
-          <h3 className="mt-3 text-xl font-semibold text-text">{entry.title}</h3>
+    <Link href={`/systems/${entry.slug}`}>
+      <motion.article
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.01, y: -2 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className="group relative panel flex h-full flex-col p-6 overflow-hidden"
+      >
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-accent2/5 blur-xl" />
         </div>
-        <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted">{entry.year}</span>
-      </div>
-      <p className="mt-4 text-sm leading-7 text-muted">{entry.summary}</p>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {entry.stack.map((item) => (
-          <span key={item} className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted">
-            {item}
-          </span>
-        ))}
-      </div>
-      <div className="mt-6 border-t border-white/5 pt-5 text-sm text-muted">{entry.cardOutcome}</div>
-      <div className="mt-6 flex items-center justify-between">
-        <span className="text-xs uppercase tracking-[0.2em] text-accent">{statusLabels[entry.status] ?? entry.status}</span>
-        <Link href={`/systems/${entry.slug}`} className="text-sm text-text transition hover:text-accent">
-          Inspect system →
-        </Link>
-      </div>
-    </article>
+
+        <div className="relative z-10">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-accent2">{entry.categoryLabel}</p>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-text">{entry.title}</h3>
+            </div>
+            <span className="font-mono text-xs text-muted">{entry.year}</span>
+          </div>
+
+          <p className="mt-3 text-sm leading-6 text-muted line-clamp-2">{entry.summary}</p>
+
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {entry.stack.slice(0, 3).map((item) => (
+              <span key={item} className="font-mono text-[10px] px-2 py-0.5 rounded border border-white/5 text-muted">
+                {item}
+              </span>
+            ))}
+            {entry.stack.length > 3 && (
+              <span className="font-mono text-[10px] px-2 py-0.5 text-muted">+{entry.stack.length - 3}</span>
+            )}
+          </div>
+
+          <div className="mt-5 pt-4 border-t border-white/5">
+            <p className="text-xs text-muted leading-5 line-clamp-2">{entry.cardOutcome}</p>
+          </div>
+
+          <div className="mt-auto pt-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className={`w-1.5 h-1.5 rounded-full ${status.color}`} />
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">{status.label}</span>
+            </div>
+            <span className="font-mono text-xs text-muted group-hover:text-accent transition-colors">
+              → Inspect system
+            </span>
+          </div>
+        </div>
+      </motion.article>
+    </Link>
   );
 }
