@@ -4,6 +4,7 @@ import PhysicalVehicle from './PhysicalVehicle.js'
 import Car from './Car.js'
 import Environment from './Environment.js'
 import Map from './Map.js'
+import Particles from './Particles.js'
 import Inputs from '../Player/Inputs.js'
 
 export default class World {
@@ -18,6 +19,7 @@ export default class World {
     this.car = new Car()
     this.environment = new Environment()
     this.map = new Map()
+    this.particles = new Particles()
 
     this.zones = this.map.getZones()
     this.lastZone = null
@@ -28,6 +30,7 @@ export default class World {
     this.physics.update()
     this.physicalVehicle.update(this.inputs.keys)
     this.car.update(this.physicalVehicle)
+    this.particles.update(window.experience.time.elapsed)
     this._checkZones()
   }
 

@@ -1,5 +1,6 @@
-import EventEmitter from './EventEmitter.js'
-import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
+const gltfLoader = new GLTFLoader()
 
 export default class Resources extends EventEmitter {
   constructor(sources) {
@@ -47,11 +48,8 @@ export default class Resources extends EventEmitter {
     } else if (source.type === 'CubeTexture') {
       const texture = await new THREE.CubeTextureLoader().loadAsync(source.path)
       this.items[source.name] = texture
-    } else if (source.type === 'glb') {
-      const gltf = await new THREE.GLTFLoader().loadAsync(source.path)
-      this.items[source.name] = gltf
-    } else if (source.type === 'gltf') {
-      const gltf = await new THREE.GLTFLoader().loadAsync(source.path)
+    } else if (source.type === 'glb' || source.type === 'gltf') {
+      const gltf = await gltfLoader.loadAsync(source.path)
       this.items[source.name] = gltf
     } else if (source.type === 'audio') {
       const audio = new Audio(source.path)
