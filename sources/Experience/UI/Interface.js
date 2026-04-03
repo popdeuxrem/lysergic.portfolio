@@ -87,10 +87,20 @@ export default class Interface {
       btn.textContent = 'Initializing...'
       btn.disabled = true
 
+      let elapsed = 0
+      const MAX_WAIT = 5000
+
       const waitForPhysics = setInterval(() => {
+        elapsed += 200
         const world = window.experience?.world
-        if (world?.physics?.ready && world?.physicalVehicle?.ready) {
+
+        const physicsOk  = world?.physics?.ready === true
+        const vehicleOk  = world?.physicalVehicle?.ready === true
+        const timedOut   = elapsed >= MAX_WAIT
+
+        if ((physicsOk && vehicleOk) || timedOut) {
           clearInterval(waitForPhysics)
+          if (timedOut) console.warn('[Interface] Physics timeout — entering world anyway')
           intro.style.opacity = '0'
           setTimeout(() => { intro.style.display = 'none' }, 1000)
         }
