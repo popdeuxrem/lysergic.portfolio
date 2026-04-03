@@ -1,7 +1,17 @@
 # Bruno Simon folio-2025 Migration Inventory
 
-## Overview
-Exact file inventory and architecture guide based on `bruno-folio-reference/` clone.
+## ⚠️ UPDATED APPROACH
+
+**After analysis, the recommended approach has CHANGED:**
+
+Instead of fully porting Bruno's vanilla Three.js architecture (which requires complex custom code), we are keeping our existing R3F + Rapier implementation and enhancing it incrementally to match Bruno's experience feel.
+
+### Rationale
+- Bruno uses vanilla Three.js + custom physics - too different to port cleanly
+- Our R3F implementation is already working with Rapier physics
+- Asset parity verified (byte-identical files)
+- Terminal UI already implemented
+- Better to iterate on existing stable code than rewrite
 
 ---
 
@@ -206,9 +216,27 @@ bruno-folio-reference/
 | Terminal UI | ✅ Overlay.jsx |
 | Current app | ✅ Functional |
 
-### What's Needed for Full Bruno Parity
-- [ ] WebGPU-ready Three.js upgrade (0.183+)
-- [ ] Rapier3d (not -compat) with proper WASM config
-- [ ] Port Player.js input logic
-- [ ] Port View.js camera logic
-- [ ] Recreate menu SVG icons
+---
+
+## 10. CURRENT STATUS
+
+### What's Been Accomplished ✅
+- Working R3F + Rapier physics implementation
+- All Bruno assets (vehicle, environment, basis, draco) loaded
+- Terminal-style UI with Lysergic branding
+- Zone-based content system (5 zones)
+- Camera follow system
+
+### Current Approach
+Keep existing R3F app and enhance to match Bruno feel:
+
+1. **Improve vehicle physics** - match Bruno's acceleration/brake curves
+2. **Enhance camera** - add smoother follow with look-ahead
+3. **Add world props** - trees, benches, scenery from Bruno's assets
+4. **Enhance audio** - background music, SFX
+5. **Visual polish** - bloom, particles, effects
+
+### NOT Pursued (Blockers)
+- Full vanilla Three.js port - too complex
+- WebGPU upgrade - requires Three.js 0.183+
+- Custom Stylus CSS - impractical to port
