@@ -5,234 +5,290 @@ export default
 [
     [
         'landingLeave',
-        'I’m going on an adventure!',
-        'Get out of the landing area.',
+        'INITIALIZING SYSTEM...',
+        'Start the experience.',
         1
     ],
     [
         'areas',
-        'Traveler',
-        'Vist every area.',
+        'SYSTEMS EXPLORER',
+        'Visit all system nodes.',
         13,
         true // Unique
     ],
     [
         'projects',
-        'But can you fix the wifi?',
-        'Check every project in the <strong>projects</strong> area.',
+        'INFRASTRUCTURE AUDIT',
+        'Review all deployed systems.',
         projectsData.length,
         true // Unique
     ],
     [
         'lab',
-        'I\'m a bit of a scientist myself',
-        'Check every project in the <strong>lab</strong> area.',
+        'LABORATORY ACCESS',
+        'Access all experimental modules.',
         labData.length,
         true // Unique
     ],
     [
         'cookie',
-        'Wake & bake',
-        'Accept <strong>1</strong> cookies.',
+        'TERMINAL COOKIE',
+        'Accept system cookies.',
         1
     ],
     [
         'cookie',
-        'Making some dough',
-        'Accept <strong>10</strong> cookies.',
+        'FULL BUFFET',
+        'Accept 5 cookies.',
+        5
+    ],
+    [
+        'achievements',
+        'ACHIEVEMENTS UNLOCKED',
+        'Unlock 5 achievements.',
+        5
+    ],
+    [
+        'achievements',
+        'COMPLETE COLLECTION',
+        'Unlock all achievements.',
+        labData.length + projectsData.length + 10,
+        true
+    ],
+    [
+        'career',
+        'DETERMINISTIC MODE',
+        'Find the career area.',
+        1
+    ],
+    [
+        'projects',
+        'FIRST DEPLOYMENT',
+        'View first project.',
+        1
+    ],
+    [
+        'projects',
+        'MULTI-DEPLOY',
+        'View 3 projects.',
+        3
+    ],
+    [
+        'projects',
+        'FULL DEPLOYMENT',
+        'View all projects.',
+        projectsData.length,
+        true
+    ],
+    [
+        'lab',
+        'RESEARCH ACCESS',
+        'View first lab project.',
+        1
+    ],
+    [
+        'lab',
+        'EXPERIMENTAL',
+        'View 3 lab projects.',
+        3
+    ],
+    [
+        'lab',
+        'FULL RESEARCH',
+        'View all lab projects.',
+        labData.length,
+        true
+    ],
+    [
+        'social',
+        'NETWORK CONNECTION',
+        'View social links.',
+        1
+    ],
+    [
+        'social',
+        'FULL NETWORK',
+        'View all social links.',
+        6,
+        true
+    ],
+    [
+        'map',
+        'CARTOGRAPHER',
+        'Open the map.',
+        1
+    ],
+    [
+        'map',
+        'FULL MAPPING',
+        'Visit all areas with the map open.',
+        5,
+        true
+    ],
+    [
+        'noises',
+        'AUDITORY RESET',
+        'Make noise.',
+        1
+    ],
+    [
+        'noises',
+        'ACOUSTIC ENGINEER',
+        'Make 5 noises.',
+        5
+    ],
+    [
+        'noises',
+        'FULL SPECTRUM',
+        'Make all noises.',
         10
     ],
     [
-        'cookie',
-        'So baked right now',
-        'Accept <strong>100</strong> cookies.',
-        100
-    ],
-    [
-        'cookie',
-        'Cookie Clicker',
-        'Accept <strong>1000</strong> cookies.',
-        1000
-    ],
-    [
-        'whisper',
-        'It\'s About Sending A Message',
-        'Post a whisper.',
+        'whispers',
+        'FIRST WHISPER',
+        'Hear a whisper.',
         1
     ],
     [
-        'sea',
-        'Under the sea',
-        'Go make friend with the fishes.',
+        'whispers',
+        'WHISPER NETWORK',
+        'Hear 3 whispers.',
+        3
+    ],
+    [
+        'whispers',
+        'FULL CHANNEL',
+        'Hear all whispers.',
+        5,
+        true
+    ],
+    [
+        'title',
+        'SYSTEM OVERRIDE',
+        'Change the title.',
         1
     ],
     [
-        'upsideDown',
-        'Turtle',
-        'Get upside down.',
-        1
+        'title',
+        'MULTI-OVERRIDE',
+        'Change the title 3 times.',
+        3
     ],
     [
-        'frontFlip',
-        'Teeth first',
-        'Do a front flip and land on your 4 wheels.',
-        1
-    ],
-    [
-        'backFlip',
-        'Flip of faith',
-        'Do a back flip and land on your 4 wheels.',
-        1
-    ],
-    [
-        'suspensions',
-        'Lowrider',
-        'Use the vehicle suspensions.',
-        4
-    ],
-    [
-        'honk',
-        'Honk',
-        'Honk me like one of your french driver.',
+        'title',
+        'TITLE ENGINEER',
+        'Change the title 10 times.',
         10
     ],
     [
-        'explosiveCrates',
-        'Great Explosion Murder God Dynamight',
-        'Blow up every explosive crate.',
-        20,
-        true // Unique
-    ],
-    [
-        'goHigh',
-        'Limit the sky',
-        'Reach <strong>15 meters</strong> high.',
-        15
-    ],
-    [
-        'strike',
-        'F*** it, dude. Let\'s go bowling',
-        'Accomplished a strike.',
+        'options',
+        'SYSTEM CONFIG',
+        'Open options.',
         1
     ],
     [
-        'toiletDown',
-        'Do not disturb',
-        'Knock down the latrine.',
-        1
+        'options',
+        'FULL CONFIG',
+        'Open all options menus.',
+        3
     ],
     [
-        'circuitFinish',
-        'Participation medal',
-        'Finish a race.',
-        1
-    ],
-    [
-        'circuitFinishFast',
-        'KA-CHOW!',
-        'Finish a race in less than <strong>30s</strong>.',
-        1
-    ],
-    [
-        'circuitLeaderboard',
-        'Early Bird gets the Worm',
-        'Make it to the leaderboard.',
-        1
-    ],
-    [
-        'fullDay',
-        'Don’t you have work to do?',
-        'Spend a full day cycle here in one go.',
-        1
-    ],
-    [
-        'distanceDriven',
-        'Baby step',
-        'Drive 1km.',
-        1
-    ],
-    [
-        'distanceDriven',
-        'Are we there yet?',
-        'Drive 10km.',
-        10
-    ],
-    [
-        'distanceDriven',
-        'Honey, I’m home!',
-        'Drive 100km.',
-        100
-    ],
-    [
-        'sacrifice',
-        'One for the god of Chaos',
-        'Sacrifice yourself into the altar.',
-        1
-    ],
-    [
-        'cataclysm',
-        'Witness me!',
-        'Witness a cataclysm',
-        1
-    ],
-    [
-        'weatherSnow',
-        'Do you want to build a snowman?',
-        'Witness snowy weather.',
-        1
-    ],
-    [
-        'weatherRain',
-        'I’m singing in the rain',
-        'Witness a rainy weather.',
-        1
-    ],
-    [
-        'lightning',
-        '1.21 Gigawatts!',
-        'Get hit by a lightning.',
-        1
-    ],
-    [
-        'waterfall',
-        'Gamer instinct',
-        'What did you expect? A treasure?',
-        1
-    ],
-    [
-        'fan',
-        'You’re my only fan',
-        'Spawn a fan.',
-        1
-    ],
-    [
-        'reset',
-        'Clean your room',
-        'Put back everything as it was.',
-        1
-    ],
-    [
-        'statueDown',
-        'Revolution!',
-        'Tear that statue down.',
-        1
-    ],
-    [
-        'konami',
-        'Up up down down…',
-        'You know the rest.',
+        'debug',
+        'INSPECTOR',
+        'Open debug menu.',
         1
     ],
     [
         'debug',
-        'It\'s not a bug, it\'s a feature',
-        'Access the debug UI.',
+        'FULL DIAGNOSTICS',
+        'Open all debug folders.',
+        5
+    ],
+    [
+        'debug',
+        'SYSTEM DEBUG',
+        'Interact with debug.',
         1
     ],
     [
-        'hacker',
-        'Hacker',
-        'This one can’t be achieved.',
+        'quality',
+        'PERFORMANCE MODE',
+        'Change quality.',
         1
+    ],
+    [
+        'quality',
+        'ADAPTIVE QUALITY',
+        'Change quality 3 times.',
+        3
+    ],
+    [
+        'timeMachine',
+        'TEMPORAL ACCESS',
+        'Enter the time machine.',
+        1
+    ],
+    [
+        'timeMachine',
+        'TEMPORAL ENGINEER',
+        'Experience 3 time periods.',
+        3
+    ],
+    [
+        'timeMachine',
+        'TEMPORAL MASTER',
+        'Experience all time periods.',
+        5,
+        true
+    ],
+    [
+        'blackFriday',
+        'BLACK FRIDAY',
+        'Find the black friday area.',
+        1
+    ],
+    [
+        'christmas',
+        'SYSTEM HOLIDAY',
+        'Find the christmas area.',
+        1
+    ],
+    [
+        'easter',
+        'EASTER EGG',
+        'Find easter eggs.',
+        1
+    ],
+    [
+        'easter',
+        'EGG HUNT',
+        'Find all easter eggs.',
+        3,
+        true
+    ],
+    [
+        'easter',
+        'EASTER MASTER',
+        'Find 5 easter eggs.',
+        5,
+        true
+    ],
+    [
+        'conveyor',
+        'CONVEYOR TEST',
+        'Use the conveyor belt.',
+        1
+    ],
+    [
+        'conveyor',
+        'LOGISTICS',
+        'Use the conveyor belt 5 times.',
+        5
+    ],
+    [
+        'conveyor',
+        'FULL LOGISTICS',
+        'Use the conveyor belt 10 times.',
+        10
     ],
 ]
