@@ -1,12 +1,19 @@
 import Link from 'next/link';
 import { SystemEntry } from '@/content/systems';
 
+const statusLabels: Record<string, string> = {
+  production: 'Production',
+  active: 'Active',
+  iterating: 'Iterating',
+  development: 'Development',
+};
+
 export function SystemCard({ entry }: { entry: SystemEntry }) {
   return (
     <article className="panel flex h-full flex-col p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent2">{entry.category}</p>
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent2">{entry.categoryLabel}</p>
           <h3 className="mt-3 text-xl font-semibold text-text">{entry.title}</h3>
         </div>
         <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted">{entry.year}</span>
@@ -19,11 +26,11 @@ export function SystemCard({ entry }: { entry: SystemEntry }) {
           </span>
         ))}
       </div>
-      <div className="mt-6 border-t border-white/5 pt-5 text-sm text-muted">{entry.outcome}</div>
+      <div className="mt-6 border-t border-white/5 pt-5 text-sm text-muted">{entry.cardOutcome}</div>
       <div className="mt-6 flex items-center justify-between">
-        <span className="text-xs uppercase tracking-[0.2em] text-accent">{entry.status}</span>
+        <span className="text-xs uppercase tracking-[0.2em] text-accent">{statusLabels[entry.status] ?? entry.status}</span>
         <Link href={`/systems/${entry.slug}`} className="text-sm text-text transition hover:text-accent">
-          Inspect system â
+          Inspect system →
         </Link>
       </div>
     </article>

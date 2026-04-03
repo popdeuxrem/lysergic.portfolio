@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getSystemBySlug, systems } from '@/content/systems';
@@ -21,12 +22,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-function getGalleryAssets(entry: ReturnType<typeof getSystemBySlug>) {
-  if (!entry) return [];
-  const diagram = { src: entry.diagramPath, alt: `${entry.title} diagram`, caption: 'Architecture diagram', isDiagram: true };
-  const screenshots = entry.screenshots?.map((s) => ({ ...s, isDiagram: false })) ?? [];
-  return [diagram, ...screenshots];
-}
+const statusLabels: Record<string, string> = {
+  production: 'Production',
+  active: 'Active',
+  iterating: 'Iterating',
+  development: 'Development',
+};
 
 export default async function SystemDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -36,21 +37,26 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
     notFound();
   }
 
-  const galleryAssets = getGalleryAssets(entry);
+  const galleryAssets = [
+    { src: entry.diagramPath, alt: `${entry.title} diagram`, caption: 'Architecture diagram' },
+    ...entry.screenshots,
+  ];
 
   return (
     <article className="container-shell py-16 md:py-24">
       <div className="panel overflow-hidden">
         <div className="border-b border-white/5 p-8 md:p-10">
-          <p className="section-label">{entry.category}</p>
+          <div className="mb-4 flex items-center gap-3">
+            <p className="section-label">{entry.categoryLabel}</p>
+            <span className="text-white/20">•</span>
+            <span className="text-xs uppercase tracking-[0.2em] text-accent">{statusLabels[entry.status] ?? entry.status}</span>
+            <span className="text-white/20">•</span>
+            <span className="text-xs text-muted">{entry.year}</span>
+          </div>
           <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">{entry.title}</h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-muted">{entry.summary}</p>
-            </div>
-            <div className="space-y-2 text-sm text-muted">
-              <div>Status: {entry.status}</div>
-              <div>Year: {entry.year}</div>
             </div>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -61,6 +67,11 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
             ))}
           </div>
         </div>
+
+        <section className="border-b border-white/5 p-8 md:p-10">
+          <p className="section-label">Outcome</p>
+          <p className="mt-4 text-lg leading-8 text-muted">{entry.cardOutcome}</p>
+        </section>
 
         <section className="border-b border-white/5 p-8 md:p-10">
           <p className="section-label">System Visuals</p>
@@ -101,6 +112,12 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
               <Block title="Artifacts" items={entry.artifacts} />
             </div>
           </aside>
+        </div>
+
+        <div className="border-t border-white/5 p-8 md:p-10">
+          <Link href="/systems" className="text-sm text-text transition hover:text-accent">
+            ← Back to Systems
+          </Link>
         </div>
       </div>
     </article>

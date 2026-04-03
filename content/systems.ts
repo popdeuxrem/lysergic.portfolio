@@ -1,275 +1,367 @@
-export const CATEGORIES = {
-  CI_CD_AUTOMATION: 'CI/CD Automation + Repo Governance',
-  API_ORCHESTRATION: 'API Orchestration + Deployment Automation',
-  NETWORK_ROUTING: 'Network Routing + Privacy Infrastructure',
-  FULL_STACK: 'Full-Stack Application System',
-  AUTOMATION: 'Automation + Communication Systems',
-} as const;
+export type SystemStatus =
+  | 'production'
+  | 'active'
+  | 'iterating'
+  | 'development';
 
-export type Category = typeof CATEGORIES[keyof typeof CATEGORIES];
+export type SystemCategory =
+  | 'ci_cd'
+  | 'deployment'
+  | 'networking'
+  | 'fullstack'
+  | 'communications';
 
-export const STATUS = {
-  PRODUCTION: 'production',
-  ACTIVE: 'active',
-  ITERATING: 'iterating',
-  DEVELOPMENT: 'development',
-} as const;
-
-export type SystemStatus = typeof STATUS[keyof typeof STATUS];
-
-export type ScreenshotEntry = {
+export type SystemScreenshot = {
   src: string;
   alt: string;
   caption?: string;
 };
 
-export type ArtifactCategory = 'Workflow run logs' | 'Policy diff previews' | 'Bootstrap execution summary' | 'Deployment dashboard snapshots' | 'Validation output' | 'Before vs after process comparison' | 'Rule-set diff' | 'Node health panel' | 'Routing verification checklist' | 'Route map' | 'Component hierarchy' | 'Architecture diagram' | 'Rendered email preview' | 'Send log' | 'Template diff';
-
 export type SystemEntry = {
   slug: string;
   title: string;
-  category: Category;
+  category: SystemCategory;
+  categoryLabel: string;
+
   summary: string;
-  outcome: string;
+  cardOutcome: string;
+
   stack: string[];
   status: SystemStatus;
-  year: string;
+  year: number;
+
   problem: string;
   constraints: string[];
+
   architecture: string[];
   execution: string[];
+
   reliabilityControls: string[];
   outcomes: string[];
-  artifacts: ArtifactCategory[];
+
+  artifacts: string[];
+
   diagramPath: string;
-  screenshots: ScreenshotEntry[];
+  screenshots: SystemScreenshot[];
 };
 
 export const systems: SystemEntry[] = [
   {
     slug: 'repository-lifecycle-orchestrator',
     title: 'Repository Lifecycle Orchestrator',
-    category: 'CI/CD Automation + Repo Governance',
+    category: 'ci_cd',
+    categoryLabel: 'CI/CD Automation + Repository Governance',
     summary:
-      'Standardized repository bootstrap, maintenance, and policy enforcement across multiple projects through deterministic automation.',
-    outcome:
-      'Eliminated repetitive repo maintenance tasks and enforced a consistent operational baseline.',
+      'Deterministic automation layer for repository bootstrap, maintenance, and policy enforcement across multiple codebases.',
+    cardOutcome:
+      'Removed repetitive repository maintenance and enforced a consistent operational baseline.',
     stack: ['GitHub Actions', 'Bash', 'Makefile', 'Node.js'],
-    status: STATUS.PRODUCTION,
-    year: '2026',
+    status: 'production',
+    year: 2026,
+
     problem:
-      'Repository setup, maintenance, and policy checks were fragmented across projects, producing inconsistent defaults and unnecessary operator time.',
+      'Repository setup and governance were inconsistent across projects, increasing operator time and introducing configuration drift.',
     constraints: [
-      'Had to remain compatible with multiple repository layouts.',
-      'No secrets hardcoded into workflows.',
-      'Safe re-runs required for repository bootstrap and policy sync.',
+      'Compatibility across heterogeneous repository structures',
+      'No hardcoded secrets in workflows',
+      'Safe re-execution for bootstrap and policy sync',
     ],
+
     architecture: [
-      'Reusable GitHub Actions workflows for lifecycle events.',
-      'Repository-local configuration files for per-project divergence.',
-      'Policy checks executed as deterministic pipeline stages.',
+      'Reusable GitHub Actions workflows bound to lifecycle events',
+      'Repository-local config for controlled divergence',
+      'Deterministic policy enforcement stages',
     ],
     execution: [
-      'Built idempotent setup scripts for labels, branch rules, templates, and CI baselines.',
-      'Encoded shared governance checks into reusable actions.',
-      'Added structured output summaries for operator visibility.',
+      'Implemented idempotent bootstrap scripts for labels, rules, and CI baselines',
+      'Encoded governance checks into reusable workflow modules',
+      'Added structured summaries for pipeline visibility',
     ],
+
     reliabilityControls: [
-      'Dry-run mode for policy diffs.',
-      'Strict bash execution flags.',
-      'Action-level failure visibility.',
-      'Rollback through versioned workflow definitions.',
+      'Dry-run mode for policy diffing',
+      'Strict bash execution (set -euo pipefail)',
+      'Step-level failure visibility',
+      'Versioned workflows for rollback',
     ],
     outcomes: [
-      'Reduced onboarding variance across repositories.',
-      'Lowered maintenance burden for repeat governance tasks.',
-      'Improved traceability of repository-level operational changes.',
+      'Reduced onboarding variance across repositories',
+      'Lowered recurring governance overhead',
+      'Improved traceability of repository changes',
     ],
-    artifacts: ['Workflow run logs', 'Policy diff previews', 'Bootstrap execution summary'],
-    diagramPath: '/system-assets/repository-lifecycle-orchestrator/architecture.svg',
+
+    artifacts: [
+      'Workflow run logs',
+      'Policy diff previews',
+      'Bootstrap execution summaries',
+    ],
+
+    diagramPath:
+      '/system-assets/repository-lifecycle-orchestrator/architecture.svg',
     screenshots: [
-      { src: '/system-assets/repository-lifecycle-orchestrator/architecture.svg', alt: 'Repository Lifecycle Orchestrator architecture diagram', caption: 'Lifecycle automation flow derived from authored pipeline stages and controls.' }
+      {
+        src: '/system-assets/repository-lifecycle-orchestrator/architecture.svg',
+        alt: 'Repository lifecycle orchestration architecture',
+        caption:
+          'Lifecycle automation pipeline showing bootstrap, enforcement, and validation stages',
+      },
     ],
   },
+
   {
     slug: 'deterministic-publishing-pipeline',
     title: 'Deterministic Publishing Pipeline',
-    category: 'API Orchestration + Deployment Automation',
+    category: 'deployment',
+    categoryLabel: 'API Orchestration + Deployment Automation',
     summary:
-      'Compressed a multi-step content publishing flow into a single controlled trigger with validation and deploy feedback.',
-    outcome: 'Reduced a 12-step publishing path to a single auditable trigger.',
+      'Event-driven publishing pipeline that compresses multi-step workflows into a single validated trigger.',
+    cardOutcome:
+      'Reduced a multi-step publishing process to a single auditable execution path.',
     stack: ['Next.js', 'GitHub Actions', 'Vercel', 'Scriptable'],
-    status: STATUS.PRODUCTION,
-    year: '2026',
+    status: 'production',
+    year: 2026,
+
     problem:
-      'Publishing required repetitive manual coordination across content, deployment, and validation steps, creating drift and operator error.',
+      'Publishing required manual coordination across content, deployment, and validation layers, leading to inconsistency and errors.',
     constraints: [
-      'Zero paid infrastructure dependency where possible.',
-      'Publishing state had to remain externalized and inspectable.',
-      'The system had to work from mobile-adjacent control surfaces as well as Git-based workflows.',
+      'Minimal reliance on paid infrastructure',
+      'Externally inspectable state',
+      'Compatibility with mobile-triggered workflows',
     ],
+
     architecture: [
-      'Event-driven publish trigger.',
-      'Validation stage before deploy.',
-      'Deploy execution routed through Vercel.',
-      'Post-deploy verification recorded as structured output.',
+      'Event-triggered pipeline entry',
+      'Pre-deploy validation gate',
+      'Vercel deployment execution',
+      'Post-deploy verification output',
     ],
     execution: [
-      'Wrapped manual publish steps into a single orchestrated pipeline.',
-      'Normalized content state handling via JSON-based configuration.',
-      'Integrated notifications and deployment reporting.',
+      'Collapsed manual steps into a single orchestrated pipeline',
+      'Standardized state via JSON configuration',
+      'Integrated notifications and deployment reporting',
     ],
+
     reliabilityControls: [
-      'Retry with bounded backoff for transient failures.',
-      'Pre-deploy validation gates.',
-      'Immutable build output from source commit.',
-      'Rollback via Vercel deployment history.',
+      'Retry with bounded backoff',
+      'Pre-deploy validation checks',
+      'Immutable build artifacts per commit',
+      'Rollback via deployment history',
     ],
     outcomes: [
-      'Reduced operator touchpoints across publishing events.',
-      'Shortened release time from minutes to seconds in the common path.',
-      'Improved deploy visibility and post-publish verification.',
+      'Reduced operator touchpoints',
+      'Shortened release time and reduced operator touchpoints',
+      'Improved deployment observability',
     ],
-    artifacts: ['Deployment dashboard snapshots', 'Validation output', 'Before vs after process comparison'],
-    diagramPath: '/system-assets/deterministic-publishing-pipeline/architecture.svg',
+
+    artifacts: [
+      'Deployment dashboards',
+      'Validation outputs',
+      'Process comparison snapshots',
+    ],
+
+    diagramPath:
+      '/system-assets/deterministic-publishing-pipeline/architecture.svg',
     screenshots: [
-      { src: '/system-assets/deterministic-publishing-pipeline/architecture.svg', alt: 'Deterministic Publishing Pipeline architecture diagram', caption: 'Publish trigger, validation, deployment, and verification path.' }
+      {
+        src: '/system-assets/deterministic-publishing-pipeline/architecture.svg',
+        alt: 'Deterministic publishing pipeline architecture',
+        caption:
+          'Trigger → validation → deployment → verification flow',
+      },
     ],
   },
+
   {
     slug: 'adaptive-proxy-routing-layer',
     title: 'Adaptive Proxy Routing Layer',
-    category: 'Network Routing + Privacy Infrastructure',
+    category: 'networking',
+    categoryLabel: 'Network Routing + Privacy Infrastructure',
     summary:
-      'Built controlled routing behavior for traffic segmentation, geo-routing, and improved fingerprint resistance.',
-    outcome: 'Established policy-driven traffic routing with explicit control over egress behavior.',
+      'Policy-driven routing layer for traffic segmentation, geo-routing, and controlled egress behavior.',
+    cardOutcome:
+      'Established explicit control over routing logic and traffic classification.',
     stack: ['Shadowrocket', 'Loon', 'SOCKS5', 'Custom Rule Engine'],
-    status: STATUS.ITERATING,
-    year: '2026',
+    status: 'iterating',
+    year: 2026,
+
     problem:
-      'Traffic handling required more control over routing decisions, destination segmentation, and privacy posture than default client behavior provided.',
+      'Default client routing lacked sufficient control over segmentation, routing policy, and privacy posture.',
     constraints: [
-      'Platform-specific client limitations.',
-      'Rules had to remain interpretable and reversible.',
-      'Config drift needed to be minimized across devices.',
+      'Platform-specific client limitations',
+      'Readable and reversible rule definitions',
+      'Minimized configuration drift across devices',
     ],
+
     architecture: [
-      'Policy rule groups for destination classes.',
-      'Proxy pools for route selection.',
-      'Fallback paths for degraded nodes or service failure.',
+      'Policy-based rule groups',
+      'Proxy pool abstraction',
+      'Fallback routing paths',
     ],
     execution: [
-      'Modeled traffic classes and matched them to explicit policy routes.',
-      'Built reusable rule blocks and validation passes.',
-      'Structured configuration for easier diffing and rollback.',
+      'Defined traffic classes mapped to explicit routing policies',
+      'Built reusable rule blocks with validation passes',
+      'Structured configs for diffing and rollback',
     ],
+
     reliabilityControls: [
-      'Fallback routing policies.',
-      'Health-aware route selection.',
-      'Versioned config rollback.',
-      'Test domains for verification after each config change.',
+      'Fallback routing logic',
+      'Node selection with health awareness',
+      'Versioned config rollback',
+      'Post-change verification via test domains',
     ],
     outcomes: [
-      'Improved control over route behavior and segmentation.',
-      'Lowered manual tuning overhead across clients.',
-      'Made routing changes more auditable and reversible.',
+      'Improved routing control and segmentation',
+      'Reduced manual tuning overhead',
+      'Increased auditability of routing changes',
     ],
-    artifacts: ['Rule-set diff', 'Node health panel', 'Routing verification checklist'],
-    diagramPath: '/system-assets/adaptive-proxy-routing-layer/architecture.svg',
+
+    artifacts: [
+      'Rule-set diffs',
+      'Node health panels',
+      'Routing verification logs',
+    ],
+
+    diagramPath:
+      '/system-assets/adaptive-proxy-routing-layer/architecture.svg',
     screenshots: [
-      { src: '/system-assets/adaptive-proxy-routing-layer/architecture.svg', alt: 'Adaptive Proxy Routing Layer architecture diagram', caption: 'Policy groups, proxy pools, fallback routes, and verification path.' }
+      {
+        src: '/system-assets/adaptive-proxy-routing-layer/architecture.svg',
+        alt: 'Adaptive proxy routing architecture',
+        caption:
+          'Policy groups, proxy pools, and fallback routing structure',
+      },
     ],
   },
+
   {
     slug: 'cryptovault-platform-architecture',
     title: 'CryptoVault Platform Architecture',
-    category: 'Full-Stack Application System',
+    category: 'fullstack',
+    categoryLabel: 'Full-Stack Application System',
     summary:
-      'Designed a modular application architecture for a crypto-oriented platform with strong UI, API, and orchestration boundaries.',
-    outcome: 'Established a composable baseline for frontend presentation, service integration, and future feature growth.',
+      'Composable application architecture separating UI, data, and orchestration layers for scalable feature delivery.',
+    cardOutcome:
+      'Established a modular baseline for frontend and backend evolution.',
     stack: ['Next.js App Router', 'API Layer', 'Animation Systems'],
-    status: STATUS.DEVELOPMENT,
-    year: '2026',
+    status: 'development',
+    year: 2026,
+
     problem:
-      'The platform needed an architecture that could scale feature delivery without collapsing into tightly coupled frontend and backend logic.',
+      'Tightly coupled UI and backend logic limited scalability and maintainability.',
     constraints: [
-      'Strong visual identity without sacrificing maintainability.',
-      'Boundaries between UI composition and service integration had to remain explicit.',
-      'Future deployment paths needed minimal rework.',
+      'Maintain strong visual identity without coupling',
+      'Clear separation between UI and service layers',
+      'Future deployment flexibility',
     ],
+
     architecture: [
-      'Route-segmented application structure.',
-      'Shared interface layer for service communication.',
-      'Component isolation for high-motion sections.',
+      'Route-segmented structure',
+      'Shared interface layer',
+      'Isolated high-motion components',
     ],
     execution: [
-      'Defined route groups and shared primitives.',
-      'Separated visual motion concerns from data concerns.',
-      'Prepared the system for progressive feature rollout.',
+      'Defined route groups and shared primitives',
+      'Decoupled animation from data flow',
+      'Prepared progressive feature rollout paths',
     ],
+
     reliabilityControls: [
-      'Typed interfaces for internal boundaries.',
-      'Static rendering where possible.',
-      'Defensive loading and fallback states.',
-      'Deploy preview verification.',
+      'Typed internal interfaces',
+      'Static rendering where applicable',
+      'Defensive loading states',
+      'Preview deployment validation',
     ],
     outcomes: [
-      'Reduced future refactor risk.',
-      'Improved composability across feature surfaces.',
-      'Created a stronger production baseline for subsequent delivery.',
+      'Reduced future refactor risk',
+      'Improved composability',
+      'Strengthened production baseline',
     ],
-    artifacts: ['Route map', 'Component hierarchy', 'Architecture diagram'],
-    diagramPath: '/system-assets/cryptovault-platform-architecture/architecture.svg',
+
+    artifacts: [
+      'Route maps',
+      'Component hierarchy diagrams',
+      'Architecture specifications',
+    ],
+
+    diagramPath:
+      '/system-assets/cryptovault-platform-architecture/architecture.svg',
     screenshots: [
-      { src: '/system-assets/cryptovault-platform-architecture/architecture.svg', alt: 'CryptoVault Platform Architecture diagram', caption: 'Route segmentation, interface layer, and component isolation map.' }
+      {
+        src: '/system-assets/cryptovault-platform-architecture/architecture.svg',
+        alt: 'CryptoVault architecture diagram',
+        caption:
+          'Route segmentation and interface boundary definition',
+      },
     ],
   },
+
   {
     slug: 'automated-campaign-delivery-engine',
     title: 'Automated Campaign Delivery Engine',
-    category: 'Automation + Communication Systems',
+    category: 'communications',
+    categoryLabel: 'Automation + Communication Systems',
     summary:
-      'Automated outbound campaign execution with embedded assets, delivery controls, and repeatable send workflows.',
-    outcome: 'Turned repetitive campaign assembly into a controlled delivery system.',
+      'Repeatable outbound campaign system with deterministic message assembly and delivery control.',
+    cardOutcome:
+      'Converted manual campaign workflows into a structured delivery pipeline.',
     stack: ['Node.js', 'Mailgun API', 'CID Assets'],
-    status: STATUS.PRODUCTION,
-    year: '2026',
+    status: 'production',
+    year: 2026,
+
     problem:
-      'Campaign preparation involved repeated asset embedding, send logic, and delivery verification work that was too manual for consistent scale.',
+      'Campaign assembly and delivery required repetitive manual steps, reducing consistency and scalability.',
     constraints: [
-      'No secret exposure in templates or code.',
-      'Asset handling needed deterministic packaging.',
-      'Testing and dry-runs had to be preserved.',
+      'No secret exposure in templates',
+      'Deterministic asset embedding',
+      'Support for test and dry-run execution',
     ],
+
     architecture: [
-      'Template rendering stage.',
-      'Embedded asset packaging.',
-      'API delivery stage with structured response capture.',
+      'Template rendering stage',
+      'Asset embedding pipeline',
+      'API-based delivery with response capture',
     ],
     execution: [
-      'Built a repeatable message assembly pipeline.',
-      'Integrated Mailgun delivery through validated API requests.',
-      'Added campaign test mode and send reporting.',
+      'Built deterministic message assembly pipeline',
+      'Integrated Mailgun API with validated requests',
+      'Added test mode and structured reporting',
     ],
+
     reliabilityControls: [
-      'Dry-run execution path.',
-      'Structured API response logging.',
-      'Input validation before send.',
-      'Rollback through template versioning.',
+      'Dry-run execution path',
+      'Structured API logging',
+      'Input validation before send',
+      'Template version rollback',
     ],
     outcomes: [
-      'Reduced assembly variance between campaigns.',
-      'Lowered send-time operator overhead.',
-      'Improved repeatability of outbound delivery workflows.',
+      'Reduced campaign variance',
+      'Lowered operator overhead',
+      'Improved repeatability of delivery',
     ],
-    artifacts: ['Rendered email preview', 'Send log', 'Template diff'],
-    diagramPath: '/system-assets/automated-campaign-delivery-engine/architecture.svg',
+
+    artifacts: [
+      'Rendered previews',
+      'Send logs',
+      'Template diffs',
+    ],
+
+    diagramPath:
+      '/system-assets/automated-campaign-delivery-engine/architecture.svg',
     screenshots: [
-      { src: '/system-assets/automated-campaign-delivery-engine/architecture.svg', alt: 'Automated Campaign Delivery Engine architecture diagram', caption: 'Template render, asset packaging, delivery, and send reporting path.' }
+      {
+        src: '/system-assets/automated-campaign-delivery-engine/architecture.svg',
+        alt: 'Campaign delivery engine architecture',
+        caption:
+          'Template → asset embedding → delivery → reporting pipeline',
+      },
     ],
   },
 ];
 
-export function getSystemBySlug(slug: string) {
+export function getSystemBySlug(slug: string): SystemEntry | undefined {
   return systems.find((entry) => entry.slug === slug);
+}
+
+export function getSystemsByStatus(status: SystemStatus): SystemEntry[] {
+  return systems.filter((entry) => entry.status === status);
 }
