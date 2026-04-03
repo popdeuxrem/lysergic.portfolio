@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 import { useGameStore } from '../store'
 
 const keysDown = { forward: false, backward: false, left: false, right: false, brake: false }
@@ -67,15 +66,11 @@ function FallbackCar() {
 
 function CarModel() {
   const { scene } = useThree()
-  const gltf = useGLTF('/models/car.glb', true, true, (loader) => {
+  
+  const gltf = useGLTF('/models/car.glb', (loader) => {
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath('/draco/')
     loader.setDRACOLoader(dracoLoader)
-
-    const ktx2Loader = new KTX2Loader()
-    ktx2Loader.setTranscoderPath('/basis/')
-    ktx2Loader.detectSupport(scene)
-    loader.setKTX2Loader(ktx2Loader)
   })
 
   useEffect(() => {

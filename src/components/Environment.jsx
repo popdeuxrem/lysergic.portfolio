@@ -2,7 +2,6 @@ import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Grid, useGLTF } from '@react-three/drei'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 
 const ZONES = [
   { pos: [-25, 0, -25], color: '#ff00ff', emissive: '#ff00ff', label: 'about' },
@@ -85,15 +84,10 @@ function ProceduralFallback() {
 
 function EnvironmentModel() {
   const { scene } = useThree()
-  const gltf = useGLTF('/models/environment.glb', true, true, (loader) => {
+  const gltf = useGLTF('/models/environment.glb', (loader) => {
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath('/draco/')
     loader.setDRACOLoader(dracoLoader)
-
-    const ktx2Loader = new KTX2Loader()
-    ktx2Loader.setTranscoderPath('/basis/')
-    ktx2Loader.detectSupport(scene)
-    loader.setKTX2Loader(ktx2Loader)
   })
 
   useEffect(() => {
