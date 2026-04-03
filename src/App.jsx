@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
-import { Physics } from '@react-three/rapier'
+import { Physics, RapierRigidBody } from '@react-three/rapier'
 import { PerspectiveCamera, Html } from '@react-three/drei'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { Experience } from './components/Experience'
 import { Overlay } from './components/Overlay'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -34,30 +34,73 @@ function Loader() {
 function DefaultLights() {
   return (
     <>
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={2} />
       <directionalLight 
         position={[10, 10, 5]} 
-        intensity={2} 
+        intensity={3} 
         castShadow
       />
-      <pointLight position={[0, 10, 0]} intensity={1} color="#ffffff" />
+      <pointLight position={[0, 10, 0]} intensity={2} color="#ffffff" />
     </>
   )
 }
 
 // ATOMIC RENDER TEST - glowing green sphere proves Canvas works
 function AtomicTest() {
+  const meshRef = useRef()
+  
   return (
-    <mesh position={[0, 5, -10]}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshStandardMaterial 
-        color="lime" 
-        emissive="lime" 
-        emissiveIntensity={2}
-        toneMapped={false}
-      />
-    </mesh>
+    <group>
+      <mesh ref={meshRef} position={[0, 2, -10]}>
+        <sphereGeometry args={[1.5, 32, 32]} />
+        <meshStandardMaterial 
+          color="#00ff00" 
+          emissive="#00ff00" 
+          emissiveIntensity={3}
+          toneMapped={false}
+        />
+      </mesh>
+      {/* Additional test: bright grid on ground */}
+      <gridHelper args={[100, 20, '#ff00ff', '#440044']} position={[0, 0.1, 0]} />
+    </group>
   )
+}
+
+// OptionalPhysics - wraps Physics so scene renders even if Rapier fails
+function OptionalPhysics({ children }) {
+  const [physicsReady, setPhysicsReady] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    // Give physics 5 seconds to initialize
+    const timer = setTimeout(() => {
+      if (!physicsReady) {
+        console.warn('[Physics] Timeout waiting for Rapier - rendering without physics')
+        setPhysicsReady(true)
+      }
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (error) {
+    console.warn('[Physics] Rapier failed:', error)
+    return <>{children}</>
+  }
+
+  try {
+    return (
+      <Physics 
+        gravity={[0, -9.81, 0]} 
+        timeStep="vary"
+        onFirstContact={() => console.log('[Physics] First contact')}
+      >
+        {children}
+      </Physics>
+    )
+  } catch (e) {
+    console.warn('[Physics] Failed to initialize:', e)
+    return <>{children}</>
+  }
 }
 
 export default function App() {
@@ -87,7 +130,8 @@ export default function App() {
             antialias: true,
             alpha: false,
             powerPreference: 'high-performance',
-            failIfMajorPerformanceCaveat: false
+            failIfMajorPerformanceCaveat: false,
+            toneMapping: 0, // THREE.NoToneMapping
           }}
         >
           <PerspectiveCamera 
@@ -99,20 +143,17 @@ export default function App() {
             onUpdate={c => c.lookAt(0, 0, 0)}
           />
           
-          {/* Default lights - ALWAYS visible, not in Suspense */}
+          {/* Default lights - ALWAYS visible */}
           <DefaultLights />
           
-          {/* Atomic Render Test - proves Canvas works before physics loads */}
+          {/* Atomic Render Test - proves Canvas works */}
           <AtomicTest />
           
+          {/* Physics wrapped in Suspense with error handling */}
           <Suspense fallback={<Loader />}>
-            <Physics 
-              gravity={[0, -9.81, 0]} 
-              timeStep="vary"
-              paused={false}
-            >
+            <OptionalPhysics>
               <Experience started={started} />
-            </Physics>
+            </OptionalPhysics>
           </Suspense>
         </Canvas>
       </div>

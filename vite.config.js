@@ -8,6 +8,15 @@ export default defineConfig({
   build: {
     outDir: './dist',
     emptyOutDir: true,
-    sourcemap: true
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'three': ['three'],
+          'rapier': ['@dimforge/rapier3d-compat'],
+        }
+      }
+    }
   }
 })
