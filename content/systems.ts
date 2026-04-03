@@ -1,4 +1,21 @@
-export type SystemStatus = 'Production / Active' | 'Active / Iterating' | 'In Development' | 'Production';
+export const CATEGORIES = {
+  CI_CD_AUTOMATION: 'CI/CD Automation + Repo Governance',
+  API_ORCHESTRATION: 'API Orchestration + Deployment Automation',
+  NETWORK_ROUTING: 'Network Routing + Privacy Infrastructure',
+  FULL_STACK: 'Full-Stack Application System',
+  AUTOMATION: 'Automation + Communication Systems',
+} as const;
+
+export type Category = typeof CATEGORIES[keyof typeof CATEGORIES];
+
+export const STATUS = {
+  PRODUCTION: 'production',
+  ACTIVE: 'active',
+  ITERATING: 'iterating',
+  DEVELOPMENT: 'development',
+} as const;
+
+export type SystemStatus = typeof STATUS[keyof typeof STATUS];
 
 export type ScreenshotEntry = {
   src: string;
@@ -11,7 +28,7 @@ export type ArtifactCategory = 'Workflow run logs' | 'Policy diff previews' | 'B
 export type SystemEntry = {
   slug: string;
   title: string;
-  category: string;
+  category: Category;
   summary: string;
   outcome: string;
   stack: string[];
@@ -25,7 +42,7 @@ export type SystemEntry = {
   outcomes: string[];
   artifacts: ArtifactCategory[];
   diagramPath: string;
-  screenshots?: ScreenshotEntry[];
+  screenshots: ScreenshotEntry[];
 };
 
 export const systems: SystemEntry[] = [
@@ -38,7 +55,7 @@ export const systems: SystemEntry[] = [
     outcome:
       'Eliminated repetitive repo maintenance tasks and enforced a consistent operational baseline.',
     stack: ['GitHub Actions', 'Bash', 'Makefile', 'Node.js'],
-    status: 'Production / Active',
+    status: STATUS.PRODUCTION,
     year: '2026',
     problem:
       'Repository setup, maintenance, and policy checks were fragmented across projects, producing inconsistent defaults and unnecessary operator time.',
@@ -82,7 +99,7 @@ export const systems: SystemEntry[] = [
       'Compressed a multi-step content publishing flow into a single controlled trigger with validation and deploy feedback.',
     outcome: 'Reduced a 12-step publishing path to a single auditable trigger.',
     stack: ['Next.js', 'GitHub Actions', 'Vercel', 'Scriptable'],
-    status: 'Production / Active',
+    status: STATUS.PRODUCTION,
     year: '2026',
     problem:
       'Publishing required repetitive manual coordination across content, deployment, and validation steps, creating drift and operator error.',
@@ -127,7 +144,7 @@ export const systems: SystemEntry[] = [
       'Built controlled routing behavior for traffic segmentation, geo-routing, and improved fingerprint resistance.',
     outcome: 'Established policy-driven traffic routing with explicit control over egress behavior.',
     stack: ['Shadowrocket', 'Loon', 'SOCKS5', 'Custom Rule Engine'],
-    status: 'Active / Iterating',
+    status: STATUS.ITERATING,
     year: '2026',
     problem:
       'Traffic handling required more control over routing decisions, destination segmentation, and privacy posture than default client behavior provided.',
@@ -171,7 +188,7 @@ export const systems: SystemEntry[] = [
       'Designed a modular application architecture for a crypto-oriented platform with strong UI, API, and orchestration boundaries.',
     outcome: 'Established a composable baseline for frontend presentation, service integration, and future feature growth.',
     stack: ['Next.js App Router', 'API Layer', 'Animation Systems'],
-    status: 'In Development',
+    status: STATUS.DEVELOPMENT,
     year: '2026',
     problem:
       'The platform needed an architecture that could scale feature delivery without collapsing into tightly coupled frontend and backend logic.',
@@ -215,7 +232,7 @@ export const systems: SystemEntry[] = [
       'Automated outbound campaign execution with embedded assets, delivery controls, and repeatable send workflows.',
     outcome: 'Turned repetitive campaign assembly into a controlled delivery system.',
     stack: ['Node.js', 'Mailgun API', 'CID Assets'],
-    status: 'Production',
+    status: STATUS.PRODUCTION,
     year: '2026',
     problem:
       'Campaign preparation involved repeated asset embedding, send logic, and delivery verification work that was too manual for consistent scale.',
