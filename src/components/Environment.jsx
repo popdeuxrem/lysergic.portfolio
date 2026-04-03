@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Grid, useGLTF } from '@react-three/drei'
+import { RigidBody } from '@react-three/rapier'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 const ZONES = [
@@ -33,16 +34,18 @@ function ZoneMarker({ pos, color, emissive }) {
   )
 }
 
-function ProceduralFallback() {
+function ProceduralFloor() {
   return (
     <>
       <color attach="background" args={['#0b0f14']} />
       <fog attach="fog" args={['#0b0f14', 0.015]} />
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-        <planeGeometry args={[500, 500]} />
-        <meshStandardMaterial color="#0b0f14" roughness={0.8} metalness={0.2} />
-      </mesh>
+      <RigidBody type="fixed" colliders="cuboid">
+        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.1, 0]}>
+          <planeGeometry args={[500, 500]} />
+          <meshStandardMaterial color="#0b0f14" roughness={0.8} metalness={0.2} />
+        </mesh>
+      </RigidBody>
 
       <Grid
         position={[0, 0.01, 0]}
@@ -101,13 +104,17 @@ function EnvironmentModel() {
     }
   }, [gltf])
 
-  return <primitive object={gltf.scene} />
+  return (
+    <RigidBody type="fixed" colliders="trimesh">
+      <primitive object={gltf.scene} />
+    </RigidBody>
+  )
 }
 
 export function Environment() {
   return (
     <>
-      <ProceduralFallback />
+      <ProceduralFloor />
       <EnvironmentModel />
     </>
   )

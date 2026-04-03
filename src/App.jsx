@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
+import { Physics } from '@react-three/rapier'
 import { Experience } from './components/Experience'
 import { Overlay } from './components/Overlay'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -20,7 +21,6 @@ function DefaultLights() {
   )
 }
 
-// ATOMIC RENDER TEST - glowing green sphere proves Canvas works
 function AtomicTest() {
   const meshRef = useRef()
   
@@ -35,13 +35,40 @@ function AtomicTest() {
           toneMapped={false}
         />
       </mesh>
-      {/* Additional test: bright grid on ground */}
       <gridHelper args={[100, 20, '#ff00ff', '#440044']} position={[0, 0.1, 0]} />
     </group>
   )
 }
 
+function SceneContent({ started }) {
+  const [physicsReady, setPhysicsReady] = useState(false)
 
+  useEffect(() => {
+    const timer = setTimeout(() => setPhysicsReady(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!physicsReady) {
+    return (
+      <>
+        <DefaultLights />
+        <AtomicTest />
+      </>
+    )
+  }
+
+  return (
+    <Physics 
+      gravity={[0, -9.81, 0]} 
+      timeStep={1/60}
+      colliders={false}
+    >
+      <DefaultLights />
+      <AtomicTest />
+      <Experience started={started} />
+    </Physics>
+  )
+}
 
 export default function App() {
   const setReady = useGameStore(s => s.setReady)
@@ -60,7 +87,7 @@ export default function App() {
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
-        background: '#050510'
+        background: '#0b0f14'
       }}>
         <Canvas
           shadows
@@ -71,7 +98,7 @@ export default function App() {
             alpha: false,
             powerPreference: 'high-performance',
             failIfMajorPerformanceCaveat: false,
-            toneMapping: 0, // THREE.NoToneMapping
+            toneMapping: 0,
           }}
         >
           <PerspectiveCamera 
@@ -83,14 +110,7 @@ export default function App() {
             onUpdate={c => c.lookAt(0, 0, 0)}
           />
           
-          {/* Default lights - ALWAYS visible */}
-          <DefaultLights />
-          
-          {/* Atomic Render Test - proves Canvas works */}
-          <AtomicTest />
-          
-          {/* Experience - renders without Suspense */}
-          <Experience started={started} />
+          <SceneContent started={started} />
         </Canvas>
       </div>
       <Overlay started={started} onStart={() => setStarted(true)} />

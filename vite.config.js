@@ -9,12 +9,16 @@ export default defineConfig({
     outDir: './dist',
     emptyOutDir: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'three': ['three'],
-          'rapier': ['@dimforge/rapier3d-compat'],
+        manualChunks(id) {
+          if (id.includes('rapier')) {
+            return 'rapier'
+          }
+          if (id.includes('three') || id.includes('@react-three')) {
+            return 'three'
+          }
         }
       }
     }

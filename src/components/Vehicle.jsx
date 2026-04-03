@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
+import { RigidBody, useRapier } from '@react-three/rapier'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { useGameStore } from '../store'
 
@@ -87,53 +88,81 @@ function CarModel() {
   return <primitive object={gltf.scene} scale={1} />
 }
 
-export function Vehicle() {
-  const groupRef = useRef()
+function RapierCar() {
+  const bodyRef = useRef()
+  const { world } = useRapier()
   const setCarPosition = useGameStore(s => s.setCarPosition)
   const setSpeed = useGameStore(s => s.setSpeed)
   const velocity = useRef({ x: 0, y: 0, z: 0 })
   const rotation = useRef(0)
 
-  useFrame((_, delta) => {
-    if (!groupRef.current) return
+  useFrame((state, delta) => {
+    if (!bodyRef.current) return
 
-    const acceleration = 15
+    const body = bodyRef.current
+    const linvel = body.linvel()
+
     const maxSpeed = 20
-    const turnSpeed = 2
+    const engineForce = 800
+    const turnTorque = 15
+    const brakeForce = 200
     const friction = 0.98
 
     if (keysDown.forward) {
-      velocity.current.z -= acceleration * delta
+      velocity.current.z -= engineForce * delta
     }
     if (keysDown.backward) {
-      velocity.current.z += acceleration * delta * 0.5
+      velocity.current.z += engineForce * delta * 0.5
     }
 
-    const speed = Math.abs(velocity.current.z)
+    const speed = Math.abs(linvel.z)
     if (keysDown.left && speed > 0.1) {
-      rotation.current += turnSpeed * delta
+      rotation.current += turnTorque * delta
     }
     if (keysDown.right && speed > 0.1) {
-      rotation.current -= turnSpeed * delta
+      rotation.current -= turnTorque * delta
+    }
+
+    if (keysDown.brake) {
+      velocity.current.z *= 0.9
     }
 
     velocity.current.z *= friction
-    const clampedSpeed = Math.max(Math.min(velocity.current.z, maxSpeed), -maxSpeed)
-    setSpeed(Math.abs(clampedSpeed))
+    
+    body.setLinvel({ x: 0, y: linvel.y, z: velocity.current.z }, true)
+    body.setAngvel({ x: 0, y: rotation.current * 0.5, z: 0 }, true)
 
-    groupRef.current.rotation.y = rotation.current
-    groupRef.current.position.z += velocity.current.z
-
-    setCarPosition({
-      x: groupRef.current.position.x,
-      y: groupRef.current.position.y,
-      z: groupRef.current.position.z
-    })
+    const pos = body.translation()
+    setSpeed(Math.abs(linvel.z))
+    setCarPosition({ x: pos.x, y: pos.y, z: pos.z })
   })
 
   return (
-    <group ref={groupRef} position={[0, 0.5, 0]}>
+    <RigidBody
+      ref={bodyRef}
+      type="dynamic"
+      colliders="cuboid"
+      mass={800}
+      position={[0, 1, 0]}
+      linearDamping={0.5}
+      angularDamping={0.8}
+      lockRotations={false}
+    >
       <CarModel />
-    </group>
+    </RigidBody>
   )
+}
+
+export function Vehicle() {
+  const { world } = useRapier()
+  
+  if (!world) {
+    return (
+      <group position={[0, 0.5, 0]}>
+        <FallbackCar />
+      </group>
+    )
+  }
+
+  return <RapierCar />
 }
