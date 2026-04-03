@@ -12,19 +12,19 @@ function Loader() {
     <Html center>
       <div style={{
         background: 'rgba(5, 5, 16, 0.98)',
-        border: '2px solid #ff00ff',
+        border: '2px solid #ff0000',
         borderRadius: 8,
         padding: '32px 48px',
         fontFamily: 'monospace',
-        color: '#ff00ff',
+        color: '#ff0000',
         textAlign: 'center',
         minWidth: 320
       }}>
         <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: 12 }}>
-          LOADING_3D_ASSETS...
+          3D_LOADING_ERROR: CHECK_ASSET_PATHS
         </div>
         <div style={{ fontSize: '0.8rem', color: '#888' }}>
-          If this persists, check console for errors
+          If you see this, Suspense is failing
         </div>
       </div>
     </Html>
@@ -42,6 +42,21 @@ function DefaultLights() {
       />
       <pointLight position={[0, 10, 0]} intensity={1} color="#ffffff" />
     </>
+  )
+}
+
+// ATOMIC RENDER TEST - glowing green sphere proves Canvas works
+function AtomicTest() {
+  return (
+    <mesh position={[0, 5, -10]}>
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshStandardMaterial 
+        color="lime" 
+        emissive="lime" 
+        emissiveIntensity={2}
+        toneMapped={false}
+      />
+    </mesh>
   )
 }
 
@@ -86,6 +101,9 @@ export default function App() {
           
           {/* Default lights - ALWAYS visible, not in Suspense */}
           <DefaultLights />
+          
+          {/* Atomic Render Test - proves Canvas works before physics loads */}
+          <AtomicTest />
           
           <Suspense fallback={<Loader />}>
             <Physics 

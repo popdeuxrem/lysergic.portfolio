@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useGameStore } from '../store'
 
 const PANEL_DATA = {
@@ -27,12 +27,37 @@ export function Overlay({ started, onStart }) {
   const setActivePanel = useGameStore(s => s.setActivePanel)
   const speed = useGameStore(s => s.speed)
   const [showIntro, setShowIntro] = useState(true)
+  
+  const [debugLogs, setDebugLogs] = useState([])
+  const logRef = useRef([])
 
   useEffect(() => {
     if (started) {
       setTimeout(() => setShowIntro(false), 800)
     }
   }, [started])
+
+  useEffect(() => {
+    const originalError = console.error
+    const originalWarn = console.warn
+    
+    console.error = (...args) => {
+      logRef.current = [...logRef.current.slice(-2), args.map(a => String(a).slice(0, 100)).join(' ')]
+      setDebugLogs([...logRef.current])
+      originalError.apply(console, args)
+    }
+    
+    console.warn = (...args) => {
+      logRef.current = [...logRef.current.slice(-2), '[WARN] ' + args.map(a => String(a).slice(0, 100)).join(' ')]
+      setDebugLogs([...logRef.current])
+      originalWarn.apply(console, args)
+    }
+
+    return () => {
+      console.error = originalError
+      console.warn = originalWarn
+    }
+  }, [])
 
   if (showIntro) {
     return (
@@ -46,6 +71,14 @@ export function Overlay({ started, onStart }) {
 
   return (
     <>
+      {debugLogs.length > 0 && (
+        <div style={{ position: 'fixed', top: 60, left: 12, background: 'rgba(255,0,0,0.9)', color: '#fff', fontFamily: 'monospace', fontSize: '0.65rem', padding: '8px', borderRadius: 4, zIndex: 9999, maxWidth: '90vw' }}>
+          {debugLogs.map((log, i) => (
+            <div key={i} style={{ marginBottom: 2 }}>{log}</div>
+          ))}
+        </div>
+      )}
+
       {activePanel && (
         <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(10, 5, 30, 0.92)', border: '1px solid rgba(102, 68, 170, 0.5)', borderRadius: 16, padding: 32, minWidth: 340, maxWidth: 520, color: '#e0d0ff', backdropFilter: 'blur(20px)', zIndex: 100 }}>
           <button onClick={() => setActivePanel(null)} style={{ position: 'absolute', top: 12, right: 16, cursor: 'pointer', color: '#6644aa', fontSize: '1.5rem', background: 'none', border: 'none' }}>✕</button>
