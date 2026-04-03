@@ -1,3 +1,13 @@
+export type SystemStatus = 'Production / Active' | 'Active / Iterating' | 'In Development' | 'Production';
+
+export type ScreenshotEntry = {
+  src: string;
+  alt: string;
+  caption?: string;
+};
+
+export type ArtifactCategory = 'Workflow run logs' | 'Policy diff previews' | 'Bootstrap execution summary' | 'Deployment dashboard snapshots' | 'Validation output' | 'Before vs after process comparison' | 'Rule-set diff' | 'Node health panel' | 'Routing verification checklist' | 'Route map' | 'Component hierarchy' | 'Architecture diagram' | 'Rendered email preview' | 'Send log' | 'Template diff';
+
 export type SystemEntry = {
   slug: string;
   title: string;
@@ -5,7 +15,7 @@ export type SystemEntry = {
   summary: string;
   outcome: string;
   stack: string[];
-  status: string;
+  status: SystemStatus;
   year: string;
   problem: string;
   constraints: string[];
@@ -13,9 +23,9 @@ export type SystemEntry = {
   execution: string[];
   reliabilityControls: string[];
   outcomes: string[];
-  artifacts: string[];
+  artifacts: ArtifactCategory[];
   diagramPath: string;
-  screenshots?: { src: string; alt: string; caption?: string }[];
+  screenshots?: ScreenshotEntry[];
 };
 
 export const systems: SystemEntry[] = [

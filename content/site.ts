@@ -5,6 +5,15 @@ export const navigation = [
   { label: 'Contact', href: '/contact' },
 ];
 
+export const contact = {
+  email: 'your-email@domain.com',
+  github: 'https://github.com/your-handle',
+  x: 'https://x.com/your-handle',
+  linkedin: 'https://linkedin.com/in/your-handle',
+};
+
+export type Contact = typeof contact;
+
 export const hero = {
   name: 'Lysergic (ð¢§êð¤¢ê½ê³êð¢§êê)',
   title: 'Systems & Automation Architect',

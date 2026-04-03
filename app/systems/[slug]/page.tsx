@@ -7,8 +7,8 @@ export function generateStaticParams() {
   return systems.map((entry) => ({ slug: entry.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const { slug } = params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const entry = getSystemBySlug(slug);
 
   if (!entry) {
@@ -21,13 +21,22 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function SystemDetailPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+function getGalleryAssets(entry: ReturnType<typeof getSystemBySlug>) {
+  if (!entry) return [];
+  const diagram = { src: entry.diagramPath, alt: `${entry.title} diagram`, caption: 'Architecture diagram', isDiagram: true };
+  const screenshots = entry.screenshots?.map((s) => ({ ...s, isDiagram: false })) ?? [];
+  return [diagram, ...screenshots];
+}
+
+export default async function SystemDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const entry = getSystemBySlug(slug);
 
   if (!entry) {
     notFound();
   }
+
+  const galleryAssets = getGalleryAssets(entry);
 
   return (
     <article className="container-shell py-16 md:py-24">
@@ -55,11 +64,17 @@ export default function SystemDetailPage({ params }: { params: { slug: string } 
 
         <section className="border-b border-white/5 p-8 md:p-10">
           <p className="section-label">System Visuals</p>
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            {(entry.screenshots?.length ? entry.screenshots : [{ src: entry.diagramPath, alt: `${entry.title} diagram` }]).map((asset) => (
-              <figure key={asset.src} className="overflow-hidden rounded-3xl border border-white/10 bg-background/30">
-                <div className="relative aspect-[16/10] w-full">
-                  <Image src={asset.src} alt={asset.alt} fill className="object-cover" />
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {galleryAssets.map((asset, index) => (
+              <figure key={`${asset.src}-${index}`} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-background/30">
+                <div className="relative aspect-[16/10] w-full cursor-pointer">
+                  <Image 
+                    src={asset.src} 
+                    alt={asset.alt} 
+                    fill 
+                    className="object-cover transition-transform duration-300 group-hover:scale-105" 
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
                 </div>
                 <figcaption className="border-t border-white/10 px-5 py-4 text-sm leading-6 text-muted">
                   {asset.caption ?? asset.alt}

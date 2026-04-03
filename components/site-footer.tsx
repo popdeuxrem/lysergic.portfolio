@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { contact } from '@/content/site';
 
 export function SiteFooter() {
   return (
@@ -11,9 +12,9 @@ export function SiteFooter() {
           </p>
         </div>
         <div className="flex gap-4 text-sm text-muted">
-          <Link href="mailto:your-email@domain.com">Email</Link>
-          <Link href="https://github.com/your-handle">GitHub</Link>
-          <Link href="https://x.com/your-handle">X</Link>
+          <Link href={`mailto:${contact.email}`}>Email</Link>
+          <Link href={contact.github}>GitHub</Link>
+          <Link href={contact.x}>X</Link>
         </div>
       </div>
     </footer>

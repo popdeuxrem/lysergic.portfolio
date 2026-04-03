@@ -1,3 +1,5 @@
+import { contact } from '@/content/site';
+
 export function ContactPanel() {
   return (
     <div className="panel grid gap-8 p-8 lg:grid-cols-[0.9fr_1.1fr]">
@@ -11,10 +13,10 @@ export function ContactPanel() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {[
-          ['Email', 'Private â available during qualified intake'],
-          ['GitHub', 'Profile link pending operator publication'],
-          ['X', 'Handle pending operator publication'],
-          ['Project intake', 'Automation / Infra / Full-stack / Other'],
+          ['Email', contact.email],
+          ['GitHub', contact.github],
+          ['X', contact.x],
+          ['LinkedIn', contact.linkedin],
         ].map(([label, value]) => (
           <div key={label} className="rounded-2xl border border-white/10 bg-background/40 p-5">
             <div className="font-mono text-xs uppercase tracking-[0.22em] text-accent">{label}</div>
