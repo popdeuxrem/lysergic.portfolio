@@ -5,7 +5,7 @@ export type NavigationItem = {
 
 export const navigation: NavigationItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Systems', href: '/systems' },
+  { label: 'Selected Systems', href: '/systems' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -41,10 +41,10 @@ export type HeroConfig = {
 
 export const hero: HeroConfig = {
   label: 'Systems that govern themselves',
-  name: 'Lysergic (ð\x96¢§ê\x9b\x85ð\x96¤¢ê\x9a\xb5ê\x9a\xb3ê\x9b\x88ð\x96¢§ê\x9b\x95ê\x9b\x85)',
+  name: 'Lysergic (𖢧ꛅ𖤢ꚽꚳꛈ𖢧ꛕꛅ)',
   title: 'Systems & Automation Architect',
   description:
-    'I build deterministic, observable, and production-grade systems that replace fragile manual workflows with auditable automation.',
+    'I design deterministic, observable, and production-grade systems that replace fragile manual workflows with reproducible, auditable execution.',
   primaryCta: { label: 'View Selected Systems', href: '/systems' },
   secondaryCta: { label: 'Initiate Engagement', href: '/contact' },
   contactCta: { label: 'Initiate Engagement', href: '/contact' },
@@ -54,23 +54,28 @@ export const capabilities = [
   'Infrastructure Engineering',
   'Automation Systems',
   'API Orchestration',
-  'Observability',
+  'Observability & Telemetry',
   'Reliability Engineering',
   'Deployment Pipelines',
 ];
 
 export const principles = [
   'Deterministic execution over probabilistic behavior',
-  'Idempotent operations as default',
-  'No hidden state',
-  'Explicit failure handling',
-  'Full observability through logs, metrics, and probes',
-  'Reproducible environments',
+  'Idempotent operations as a baseline constraint',
+  'Zero hidden state; all state is explicit and inspectable',
+  'Failure is modeled, not ignored',
+  'Full observability: logs, metrics, traces, and health probes',
+  'Reproducible environments with pinned dependencies',
 ];
 
 export const metrics = [
   { label: 'Selected systems', value: '5' },
   { label: 'Production / active systems', value: '4' },
   { label: 'In-development systems', value: '1' },
-  { label: 'Documented artifact types', value: '15' },
+  { label: 'Core capability areas', value: '6' },
 ];
+
+export const portfolioStatus = {
+  label: 'Portfolio Status',
+  value: 'Operational',
+} as const;
