@@ -14,21 +14,29 @@ export default class Experience {
   constructor(canvas) {
     if (instance) return instance
     instance = this
-
     window.experience = this
-    window.THREE = THREE
+
+    console.log('[Experience] booting...')
+
     this.canvas = canvas
     this.sizes = new Sizes()
     this.time = new Time()
     this.scene = new THREE.Scene()
+
+    console.log('[Experience] scene created, loading resources...')
     this.resources = new Resources(sources)
+
     this.camera = new Camera()
     this.renderer = new Renderer()
+
+    console.log('[Experience] camera + renderer ready, building world...')
     this.world = new World()
     this.interface = new Interface()
 
     this.sizes.on('resize', () => this.resize())
     this.time.on('tick', () => this.update())
+
+    console.log('[Experience] boot complete ✓')
   }
 
   resize() {
@@ -37,18 +45,12 @@ export default class Experience {
   }
 
   update() {
-    if (!this.world._ready) return
-    
     this.world.update()
     this.camera.update()
     this.renderer.update()
-
-    if (this.world.physicalVehicle?.ready) {
-      const speed = this.world.physicalVehicle.getSpeed()
-      this.interface.updateSpeed(speed)
-    }
   }
 }
 
 const canvas = document.querySelector('canvas.webgl')
+console.log('[Experience] canvas found:', canvas)
 new Experience(canvas)

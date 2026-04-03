@@ -3,48 +3,45 @@ import * as THREE from 'three'
 export default class Map {
   constructor() {
     const scene = window.experience.scene
-    this.zones = []
 
-    const geo = new THREE.PlaneGeometry(200, 200, 50, 50)
-    const mat = new THREE.MeshStandardMaterial({ 
-      color: 0x111122, 
-      roughness: 0.9 
+    const groundGeo = new THREE.PlaneGeometry(300, 300)
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x110a22,
+      roughness: 0.9,
+      metalness: 0.1
     })
-    const ground = new THREE.Mesh(geo, mat)
+    const ground = new THREE.Mesh(groundGeo, groundMat)
     ground.rotation.x = -Math.PI / 2
     ground.receiveShadow = true
     scene.add(ground)
 
-    const grid = new THREE.GridHelper(200, 100, 0x6644aa, 0x331166)
-    grid.material.opacity = 0.3
-    grid.material.transparent = true
+    const grid = new THREE.GridHelper(300, 60, 0x6633aa, 0x331155)
+    grid.position.y = 0.01
     scene.add(grid)
 
-    this._addBuildings(scene)
-    this._addObstacles(scene)
-  }
-
-  _addBuildings(scene) {
-    const buildings = [
-      { pos: [-20, 0, -20], label: 'about', height: 8 },
-      { pos: [20, 0, -20], label: 'projects', height: 12 },
-      { pos: [-20, 0, 20], label: 'skills', height: 6 },
-      { pos: [20, 0, 20], label: 'contact', height: 10 },
-      { pos: [0, 0, -30], label: 'work', height: 14 },
+    const zones = [
+      { pos: [-25, 0, -25], color: 0xcc44ff, emissive: 0x660088, label: 'about' },
+      { pos: [ 25, 0, -25], color: 0x44ccff, emissive: 0x006688, label: 'projects' },
+      { pos: [-25, 0,  25], color: 0xff44aa, emissive: 0x880044, label: 'skills' },
+      { pos: [ 25, 0,  25], color: 0x44ffaa, emissive: 0x006644, label: 'contact' },
     ]
 
-    buildings.forEach(({ pos, label, height }) => {
-      const geo = new THREE.BoxGeometry(5, height, 5)
+    this.zones = []
+
+    zones.forEach(({ pos, color, emissive, label }) => {
+      const h = 12
+      const geo = new THREE.BoxGeometry(8, h, 8)
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x1a0a33,
-        emissive: 0x330066,
-        emissiveIntensity: 0.3,
+        color,
+        emissive,
+        emissiveIntensity: 0.8,
         roughness: 0.3,
-        metalness: 0.7
+        metalness: 0.6
       })
       const mesh = new THREE.Mesh(geo, mat)
-      mesh.position.set(pos[0], height / 2, pos[2])
+      mesh.position.set(pos[0], h / 2, pos[2])
       mesh.castShadow = true
+      mesh.receiveShadow = true
       mesh.userData.label = label
       mesh.userData.interactive = true
       scene.add(mesh)
@@ -52,60 +49,21 @@ export default class Map {
       this.zones.push({
         label,
         position: new THREE.Vector3(pos[0], 0, pos[2]),
-        radius: 6
+        radius: 8
       })
-
-      const labelCanvas = this._createLabelCanvas(label)
-      const labelTexture = new THREE.CanvasTexture(labelCanvas)
-      const labelMat = new THREE.SpriteMaterial({ 
-        map: labelTexture, 
-        transparent: true 
-      })
-      const labelSprite = new THREE.Sprite(labelMat)
-      labelSprite.position.set(pos[0], height + 2, pos[2])
-      labelSprite.scale.set(4, 2, 1)
-      scene.add(labelSprite)
     })
-  }
 
-  _createLabelCanvas(text) {
-    const canvas = document.createElement('canvas')
-    canvas.width = 256
-    canvas.height = 128
-    const ctx = canvas.getContext('2d')
-    ctx.fillStyle = 'rgba(10, 5, 30, 0.8)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.strokeStyle = '#6644aa'
-    ctx.lineWidth = 4
-    ctx.strokeRect(0, 0, canvas.width, canvas.height)
-    ctx.font = 'bold 48px Nunito, sans-serif'
-    ctx.fillStyle = '#cc88ff'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(text.toUpperCase(), canvas.width / 2, canvas.height / 2)
-    return canvas
-  }
+    const markerGeo = new THREE.SphereGeometry(1.5, 16, 16)
+    const markerMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 1
+    })
+    const marker = new THREE.Mesh(markerGeo, markerMat)
+    marker.position.set(0, 1.5, 0)
+    scene.add(marker)
 
-  _addObstacles(scene) {
-    for (let i = 0; i < 20; i++) {
-      const x = (Math.random() - 0.5) * 80
-      const z = (Math.random() - 0.5) * 80
-
-      if (Math.abs(x) < 15 && Math.abs(z) < 15) continue
-
-      const height = 1 + Math.random() * 3
-      const geo = new THREE.BoxGeometry(2, height, 2)
-      const mat = new THREE.MeshStandardMaterial({ 
-        color: 0x221133,
-        emissive: 0x440066,
-        emissiveIntensity: 0.2,
-        roughness: 0.5 
-      })
-      const mesh = new THREE.Mesh(geo, mat)
-      mesh.position.set(x, height / 2, z)
-      mesh.castShadow = true
-      scene.add(mesh)
-    }
+    console.log('[Map] ground, grid, buildings added')
   }
 
   getZones() {

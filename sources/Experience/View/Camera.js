@@ -6,13 +6,20 @@ export default class Camera {
     this.sizes = e.sizes
     this.scene = e.scene
 
-    this.instance = new THREE.PerspectiveCamera(60, this.sizes.width / this.sizes.height, 0.1, 1000)
-    this.instance.position.set(0, 8, 20)
+    this.instance = new THREE.PerspectiveCamera(
+      60,
+      this.sizes.width / this.sizes.height,
+      0.1,
+      500
+    )
+
+    this.instance.position.set(0, 15, 30)
+    this.instance.lookAt(0, 0, 0)
     this.scene.add(this.instance)
 
-    this.target = new THREE.Vector3()
-    this.currentPosition = new THREE.Vector3()
-    this.currentLookAt = new THREE.Vector3()
+    this.target = new THREE.Vector3(0, 0, 0)
+
+    console.log('[Camera] initialized at', this.instance.position)
   }
 
   resize() {
@@ -21,21 +28,27 @@ export default class Camera {
   }
 
   update() {
-    const world = window.experience.world
-    if (!world || !world.physicalVehicle || !world.physicalVehicle.ready) return
+    const world = window.experience?.world
+    if (!world?.physicalVehicle?.ready) return
 
-    const carPos = world.physicalVehicle.getPosition()
-    const carRot = world.physicalVehicle.getRotation()
+    const pos = world.physicalVehicle.getPosition()
+    const rot = world.physicalVehicle.getRotation()
 
-    const carVec = new THREE.Vector3(carPos.x, carPos.y, carPos.z)
-    const carQuat = new THREE.Quaternion(carRot.x, carRot.y, carRot.z, carRot.w)
+    this.target.lerp(new THREE.Vector3(pos.x, pos.y, pos.z), 0.1)
 
-    const offset = new THREE.Vector3(0, 6, 12)
-    offset.applyQuaternion(carQuat)
-    const desiredPosition = carVec.clone().add(offset)
+    const angle = Math.atan2(rot.x, rot.w) * 2
+    const offsetX = Math.sin(angle) * -20
+    const offsetZ = Math.cos(angle) * -20
 
-    this.instance.position.lerp(desiredPosition, 0.05)
-    this.target.lerp(carVec, 0.1)
+    this.instance.position.lerp(
+      new THREE.Vector3(
+        this.target.x + offsetX,
+        this.target.y + 12,
+        this.target.z + offsetZ
+      ),
+      0.05
+    )
+
     this.instance.lookAt(this.target)
   }
 }

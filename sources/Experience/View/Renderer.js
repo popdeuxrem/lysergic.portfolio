@@ -1,7 +1,4 @@
 import * as THREE from 'three'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 
 export default class Renderer {
   constructor() {
@@ -13,40 +10,28 @@ export default class Renderer {
     this.instance = new THREE.WebGLRenderer({
       canvas: e.canvas,
       antialias: true,
+      alpha: false,
       powerPreference: 'high-performance'
     })
+
+    this.instance.setClearColor(0x0a0518, 1)
     this.instance.setSize(this.sizes.width, this.sizes.height)
-    this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+    this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.instance.toneMapping = THREE.ACESFilmicToneMapping
-    this.instance.toneMappingExposure = 1.2
+    this.instance.toneMappingExposure = 1.5
     this.instance.shadowMap.enabled = true
     this.instance.shadowMap.type = THREE.PCFSoftShadowMap
 
-    this._initPostProcessing()
-  }
-
-  _initPostProcessing() {
-    this.composer = new EffectComposer(this.instance)
-
-    const renderPass = new RenderPass(this.scene, this.camera.instance)
-    this.composer.addPass(renderPass)
-
-    this.bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(this.sizes.width, this.sizes.height),
-      0.4,
-      0.4,
-      0.85
-    )
-    this.composer.addPass(this.bloomPass)
+    console.log('[Renderer] WebGL initialized, size:', this.sizes.width, 'x', this.sizes.height)
   }
 
   resize() {
-    this.instance.setSize(this.sizes.width, this.sizes.height)
-    this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
-    this.composer.setSize(this.sizes.width, this.sizes.height)
+    const e = window.experience
+    this.instance.setSize(e.sizes.width, e.sizes.height)
+    this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   }
 
   update() {
-    this.composer.render()
+    this.instance.render(this.scene, this.camera.instance)
   }
 }
