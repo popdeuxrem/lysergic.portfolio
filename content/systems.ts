@@ -105,6 +105,12 @@ export const systems: SystemEntry[] = [
         caption:
           'Lifecycle automation pipeline showing bootstrap, enforcement, and validation stages',
       },
+      {
+        src: '/system-assets/repository-lifecycle-orchestrator/flow.svg',
+        alt: 'Repository lifecycle orchestration execution flow',
+        caption:
+          'Execution flow from developer trigger through policy evaluation to enforcement and audit output',
+      },
     ],
   },
 
@@ -168,6 +174,12 @@ export const systems: SystemEntry[] = [
         caption:
           'Trigger → validation → deployment → verification flow',
       },
+      {
+        src: '/system-assets/deterministic-publishing-pipeline/flow.svg',
+        alt: 'Deterministic publishing pipeline execution flow',
+        caption:
+          'Execution flow from trigger through validation decision to deployment and post-deploy verification',
+      },
     ],
   },
 
@@ -229,6 +241,12 @@ export const systems: SystemEntry[] = [
         alt: 'Adaptive proxy routing architecture',
         caption:
           'Policy groups, proxy pools, and fallback routing structure',
+      },
+      {
+        src: '/system-assets/adaptive-proxy-routing-layer/flow.svg',
+        alt: 'Adaptive proxy routing execution flow',
+        caption:
+          'Execution flow from client request through rule engine and health check to target routing',
       },
     ],
   },
@@ -292,6 +310,12 @@ export const systems: SystemEntry[] = [
         caption:
           'Route segmentation and interface boundary definition',
       },
+      {
+        src: '/system-assets/cryptovault-platform-architecture/flow.svg',
+        alt: 'CryptoVault platform execution flow',
+        caption:
+          'Execution flow from UI interaction through component rendering, state management, to API and deployment',
+      },
     ],
   },
 
@@ -353,6 +377,12 @@ export const systems: SystemEntry[] = [
         alt: 'Campaign delivery engine architecture',
         caption:
           'Template → asset embedding → delivery → reporting pipeline',
+      },
+      {
+        src: '/system-assets/automated-campaign-delivery-engine/flow.svg',
+        alt: 'Campaign delivery engine execution flow',
+        caption:
+          'Execution flow from template rendering through asset embedding and message building to Mailgun delivery',
       },
     ],
   },
