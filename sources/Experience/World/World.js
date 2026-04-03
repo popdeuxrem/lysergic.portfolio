@@ -12,7 +12,14 @@ export default class World {
     const e = window.experience
     this.scene = e.scene
     this.resources = e.resources
+    this._ready = false
 
+    this.resources.on('ready', () => {
+      this._build()
+    })
+  }
+
+  _build() {
     this.physics = new PhysicsWorld()
     this.inputs = new Inputs()
     this.physicalVehicle = new PhysicalVehicle(this.physics)
@@ -23,9 +30,11 @@ export default class World {
 
     this.zones = this.map.getZones()
     this.lastZone = null
+    this._ready = true
   }
 
   update() {
+    if (!this._ready) return
     this.inputs.update()
     this.physics.update()
     this.physicalVehicle.update(this.inputs.keys)
@@ -35,6 +44,7 @@ export default class World {
   }
 
   _checkZones() {
+    if (!this.physicalVehicle?.ready) return
     const pos = this.physicalVehicle.getPosition()
     if (!pos) return
 

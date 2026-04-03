@@ -83,8 +83,18 @@ export default class Interface {
     `
     this.ui.appendChild(intro)
     document.getElementById('start-btn').addEventListener('click', () => {
-      intro.style.opacity = '0'
-      setTimeout(() => { intro.style.display = 'none' }, 1000)
+      const btn = document.getElementById('start-btn')
+      btn.textContent = 'Initializing...'
+      btn.disabled = true
+
+      const waitForPhysics = setInterval(() => {
+        const world = window.experience?.world
+        if (world?.physics?.ready && world?.physicalVehicle?.ready) {
+          clearInterval(waitForPhysics)
+          intro.style.opacity = '0'
+          setTimeout(() => { intro.style.display = 'none' }, 1000)
+        }
+      }, 200)
     })
 
     const hint = document.createElement('div')

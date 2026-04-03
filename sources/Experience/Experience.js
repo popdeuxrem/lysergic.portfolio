@@ -16,12 +16,12 @@ export default class Experience {
     instance = this
 
     window.experience = this
+    window.THREE = THREE
     this.canvas = canvas
     this.sizes = new Sizes()
     this.time = new Time()
     this.scene = new THREE.Scene()
     this.resources = new Resources(sources)
-    this.resources.load()
     this.camera = new Camera()
     this.renderer = new Renderer()
     this.world = new World()
@@ -37,6 +37,8 @@ export default class Experience {
   }
 
   update() {
+    if (!this.world._ready) return
+    
     this.world.update()
     this.camera.update()
     this.renderer.update()
