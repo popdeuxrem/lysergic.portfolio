@@ -1,6 +1,7 @@
 import EventEmitter from './EventEmitter.js'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 
 export default class Resources extends EventEmitter {
   constructor(sources = []) {
@@ -11,6 +12,10 @@ export default class Resources extends EventEmitter {
     this.loaded = 0
 
     this.gltfLoader = new GLTFLoader()
+    this.ktx2Loader = new KTX2Loader()
+    this.ktx2Loader.setTranscoderPath('/basis/')
+    this.ktx2Loader.detectSupport(new THREE.WebGLRenderer())
+    this.gltfLoader.setKTX2Loader(this.ktx2Loader)
 
     if (this.toLoad === 0) {
       this.trigger('ready')
@@ -33,7 +38,7 @@ export default class Resources extends EventEmitter {
     } else if (source.type === 'CubeTexture') {
       const texture = await new THREE.CubeTextureLoader().loadAsync(source.path)
       this.items[source.name] = texture
-    } else if (source.type === 'glb' || source.type === 'gltf') {
+    } else if (source.type === 'glb' || source.type === 'gltf' || source.type === 'gltfModel') {
       const gltf = await this.gltfLoader.loadAsync(source.path)
       this.items[source.name] = gltf
     } else if (source.type === 'audio') {

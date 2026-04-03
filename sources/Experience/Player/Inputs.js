@@ -11,6 +11,7 @@ export default class Inputs {
     }
     this._bindKeyboard()
     this._bindGamepad()
+    this._bindTouch()
   }
 
   _bindKeyboard() {
@@ -35,6 +36,32 @@ export default class Inputs {
 
   _bindGamepad() {
     // Gamepad API - handled in update()
+  }
+
+  _bindTouch() {
+    this._touchStart = null
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.target.closest('#ui')) return
+      this._touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    }, { passive: true })
+
+    window.addEventListener('touchmove', (e) => {
+      if (!this._touchStart) return
+      const dx = e.touches[0].clientX - this._touchStart.x
+      const dy = e.touches[0].clientY - this._touchStart.y
+
+      const deadzone = 15
+      this.keys.forward = dy < -deadzone
+      this.keys.backward = dy > deadzone
+      this.keys.left = dx < -deadzone
+      this.keys.right = dx > deadzone
+    }, { passive: true })
+
+    window.addEventListener('touchend', () => {
+      this._touchStart = null
+      this.keys.forward = this.keys.backward = this.keys.left = this.keys.right = false
+    })
   }
 
   update() {

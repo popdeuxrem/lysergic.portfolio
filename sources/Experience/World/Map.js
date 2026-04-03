@@ -2,14 +2,33 @@ import * as THREE from 'three'
 
 export default class Map {
   constructor() {
-    const scene = window.experience.scene
+    const e = window.experience
+    this.scene = e.scene
+    this.resources = e.resources
+    this.zones = []
+
+    const envModel = this.resources.items['terrainModel']
+    if (envModel) {
+      const env = envModel.scene
+      env.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+      this.scene.add(env)
+      console.log('[Map] GLB terrain loaded ✓')
+    } else {
+      console.warn('[Map] No GLB terrain found, using procedural fallback')
+      this._buildProceduralMap()
+    }
+  }
+
+  _buildProceduralMap() {
+    const scene = this.scene
 
     const groundGeo = new THREE.PlaneGeometry(300, 300)
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x110a22,
-      roughness: 0.9,
-      metalness: 0.1
-    })
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x110a22, roughness: 0.9 })
     const ground = new THREE.Mesh(groundGeo, groundMat)
     ground.rotation.x = -Math.PI / 2
     ground.receiveShadow = true
@@ -26,24 +45,14 @@ export default class Map {
       { pos: [ 25, 0,  25], color: 0x44ffaa, emissive: 0x006644, label: 'contact' },
     ]
 
-    this.zones = []
-
     zones.forEach(({ pos, color, emissive, label }) => {
       const h = 12
-      const geo = new THREE.BoxGeometry(8, h, 8)
-      const mat = new THREE.MeshStandardMaterial({
-        color,
-        emissive,
-        emissiveIntensity: 0.8,
-        roughness: 0.3,
-        metalness: 0.6
-      })
-      const mesh = new THREE.Mesh(geo, mat)
-      mesh.position.set(pos[0], h / 2, pos[2])
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(8, h, 8),
+        new THREE.MeshStandardMaterial({ color, emissive, emissiveIntensity: 0.8, roughness: 0.3, metalness: 0.6 })
+      )
+      mesh.position.set(pos[0], h/2, pos[2])
       mesh.castShadow = true
-      mesh.receiveShadow = true
-      mesh.userData.label = label
-      mesh.userData.interactive = true
       scene.add(mesh)
 
       this.zones.push({
@@ -52,18 +61,6 @@ export default class Map {
         radius: 8
       })
     })
-
-    const markerGeo = new THREE.SphereGeometry(1.5, 16, 16)
-    const markerMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xffffff,
-      emissiveIntensity: 1
-    })
-    const marker = new THREE.Mesh(markerGeo, markerMat)
-    marker.position.set(0, 1.5, 0)
-    scene.add(marker)
-
-    console.log('[Map] ground, grid, buildings added')
   }
 
   getZones() {

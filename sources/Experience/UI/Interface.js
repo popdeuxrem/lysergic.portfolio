@@ -198,6 +198,14 @@ export default class Interface {
     hud.querySelectorAll('.hud-btn').forEach(btn => {
       btn.addEventListener('click', () => this.openPanel(btn.dataset.panel))
     })
+
+    // Mobile joystick hint
+    if (/iPhone|iPad|Android/i.test(navigator.userAgent)) {
+      const joystick = document.createElement('div')
+      joystick.id = 'joystick-hint'
+      joystick.innerHTML = '<div style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);color:rgba(200,170,255,0.5);font-size:0.75rem;font-family:Nunito,sans-serif;text-align:center;pointer-events:none">Drag anywhere to drive</div>'
+      this.ui.appendChild(joystick)
+    }
   }
 
   _bindCloseButtons() {
