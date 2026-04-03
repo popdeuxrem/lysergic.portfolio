@@ -42,6 +42,8 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
     ...entry.screenshots,
   ];
 
+  const hasScreenshots = entry.screenshots.length > 0;
+
   return (
     <article className="container-shell py-16 md:py-24">
       <div className="panel overflow-hidden">
@@ -78,7 +80,7 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {galleryAssets.map((asset, index) => (
               <figure key={`${asset.src}-${index}`} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-background/30">
-                <div className="relative aspect-[16/10] w-full cursor-pointer">
+                <div className="relative aspect-[16/10] w-full">
                   <Image 
                     src={asset.src} 
                     alt={asset.alt} 
@@ -92,6 +94,11 @@ export default async function SystemDetailPage({ params }: { params: Promise<{ s
                 </figcaption>
               </figure>
             ))}
+            {!hasScreenshots && (
+              <p className="col-span-full mt-4 text-sm text-muted">
+                Visual artifacts for this system are being documented.
+              </p>
+            )}
           </div>
         </section>
 
