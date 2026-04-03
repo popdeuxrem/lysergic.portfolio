@@ -14,15 +14,15 @@ export default class Renderer {
       powerPreference: 'high-performance'
     })
 
-    this.instance.setClearColor(0x0a0518, 1)
     this.instance.setSize(this.sizes.width, this.sizes.height)
     this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    this.instance.toneMapping = THREE.ACESFilmicToneMapping
-    this.instance.toneMappingExposure = 1.5
+    this.instance.setClearColor(0x1a0a3a, 1)
+    this.instance.toneMapping = THREE.NoToneMapping
+    this.instance.outputColorSpace = THREE.SRGBColorSpace
     this.instance.shadowMap.enabled = true
     this.instance.shadowMap.type = THREE.PCFSoftShadowMap
 
-    console.log('[Renderer] WebGL initialized, size:', this.sizes.width, 'x', this.sizes.height)
+    console.log('[Renderer] initialized ✓')
   }
 
   resize() {

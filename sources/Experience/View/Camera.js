@@ -7,19 +7,18 @@ export default class Camera {
     this.scene = e.scene
 
     this.instance = new THREE.PerspectiveCamera(
-      60,
+      55,
       this.sizes.width / this.sizes.height,
       0.1,
       500
     )
-
-    this.instance.position.set(0, 15, 30)
+    this.instance.position.set(0, 18, 35)
     this.instance.lookAt(0, 0, 0)
     this.scene.add(this.instance)
 
-    this.target = new THREE.Vector3(0, 0, 0)
-
-    console.log('[Camera] initialized at', this.instance.position)
+    this._targetPos  = new THREE.Vector3()
+    this._camPos     = new THREE.Vector3(0, 18, 35)
+    this._lookAt     = new THREE.Vector3()
   }
 
   resize() {
@@ -34,21 +33,26 @@ export default class Camera {
     const pos = world.physicalVehicle.getPosition()
     const rot = world.physicalVehicle.getRotation()
 
-    this.target.lerp(new THREE.Vector3(pos.x, pos.y, pos.z), 0.1)
+    this._targetPos.lerp(new THREE.Vector3(pos.x, pos.y, pos.z), 0.1)
 
-    const angle = Math.atan2(rot.x, rot.w) * 2
-    const offsetX = Math.sin(angle) * -20
-    const offsetZ = Math.cos(angle) * -20
+    const q = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w)
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(q)
 
-    this.instance.position.lerp(
-      new THREE.Vector3(
-        this.target.x + offsetX,
-        this.target.y + 12,
-        this.target.z + offsetZ
-      ),
-      0.05
+    const desiredCamPos = new THREE.Vector3(
+      this._targetPos.x - forward.x * 22,
+      this._targetPos.y + 12,
+      this._targetPos.z - forward.z * 22
     )
 
-    this.instance.lookAt(this.target)
+    desiredCamPos.y = Math.max(5, desiredCamPos.y)
+
+    this._camPos.lerp(desiredCamPos, 0.06)
+    this.instance.position.copy(this._camPos)
+
+    this._lookAt.lerp(
+      new THREE.Vector3(this._targetPos.x, this._targetPos.y + 1, this._targetPos.z),
+      0.1
+    )
+    this.instance.lookAt(this._lookAt)
   }
 }

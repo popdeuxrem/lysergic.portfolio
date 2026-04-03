@@ -2,36 +2,47 @@ import * as THREE from 'three'
 
 export default class Environment {
   constructor() {
-    const scene = window.experience.scene
+    const e = window.experience
+    const scene = e.scene
+    const renderer = e.renderer.instance
 
-    scene.background = new THREE.Color(0x0a0518)
-    scene.fog = new THREE.FogExp2(0x0a0518, 0.008)
+    renderer.toneMapping = THREE.NoToneMapping
+    renderer.outputColorSpace = THREE.SRGBColorSpace
 
-    const ambient = new THREE.AmbientLight(0xffffff, 1.5)
-    scene.add(ambient)
+    scene.background = new THREE.Color(0x1a0a3a)
+    scene.fog = new THREE.FogExp2(0x1a0a3a, 0.012)
 
-    const sun = new THREE.DirectionalLight(0xffffff, 3)
-    sun.position.set(30, 50, 30)
+    const hemi = new THREE.HemisphereLight(0x8866cc, 0x221133, 1.2)
+    scene.add(hemi)
+
+    const sun = new THREE.DirectionalLight(0xffffff, 3.0)
+    sun.position.set(30, 50, 20)
     sun.castShadow = true
     sun.shadow.camera.far = 300
-    sun.shadow.camera.left = -100
-    sun.shadow.camera.right = 100
-    sun.shadow.camera.top = 100
-    sun.shadow.camera.bottom = -100
+    sun.shadow.camera.left  = -80
+    sun.shadow.camera.right =  80
+    sun.shadow.camera.top   =  80
+    sun.shadow.camera.bottom = -80
     sun.shadow.mapSize.set(2048, 2048)
+    sun.shadow.bias = -0.001
     scene.add(sun)
 
+    const fill = new THREE.DirectionalLight(0x9966ff, 1.0)
+    fill.position.set(-20, 20, -20)
+    scene.add(fill)
+
     const neons = [
-      { color: 0xcc44ff, pos: [15, 8, 0] },
-      { color: 0x44ccff, pos: [-15, 8, 0] },
-      { color: 0xff44aa, pos: [0, 8, 15] },
+      { color: 0xcc44ff, pos: [-25, 6, -25] },
+      { color: 0x44ccff, pos: [ 25, 6, -25] },
+      { color: 0xff44aa, pos: [-25, 6,  25] },
+      { color: 0x44ffaa, pos: [ 25, 6,  25] },
     ]
     neons.forEach(({ color, pos }) => {
-      const light = new THREE.PointLight(color, 5, 60)
+      const light = new THREE.PointLight(color, 6, 50)
       light.position.set(...pos)
       scene.add(light)
     })
 
-    console.log('[Environment] lights added')
+    console.log('[Environment] lighting configured ✓')
   }
 }
