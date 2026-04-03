@@ -1,13 +1,16 @@
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { RigidBody } from '@react-three/rapier'
-import { Grid } from '@react-three/drei'
+import { useRef, useState, useEffect } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { Grid, useGLTF } from '@react-three/drei'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
+import { useGameStore } from '../store'
 
 const ZONES = [
-  { pos: [-25, 0, -25], color: '#cc44ff', emissive: '#880066', label: 'about' },
-  { pos: [ 25, 0, -25], color: '#44ccff', emissive: '#006688', label: 'projects' },
-  { pos: [-25, 0,  25], color: '#ff44aa', emissive: '#880044', label: 'skills' },
-  { pos: [ 25, 0,  25], color: '#44ffaa', emissive: '#006644', label: 'contact' },
+  { pos: [-25, 0, -25], color: '#ff00ff', emissive: '#ff00ff', label: 'about' },
+  { pos: [ 25, 0, -25], color: '#00ffff', emissive: '#00ffff', label: 'projects' },
+  { pos: [-25, 0,  25], color: '#33ff00', emissive: '#33ff00', label: 'cryptovault' },
+  { pos: [ 25, 0,  25], color: '#ff6600', emissive: '#ff6600', label: 'repo' },
+  { pos: [  0, 0, -40], color: '#ffff00', emissive: '#ffff00', label: 'proxy' },
 ]
 
 function ZoneMarker({ pos, color, emissive }) {
@@ -20,77 +23,55 @@ function ZoneMarker({ pos, color, emissive }) {
 
   return (
     <group position={pos}>
-      {/* Bright glowing pillar */}
       <mesh position={[0, 5, 0]} castShadow>
         <cylinderGeometry args={[0.5, 0.5, 10, 8]} />
-        <meshStandardMaterial 
-          color={color} 
-          emissive={emissive} 
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
+        <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={2} toneMapped={false} />
       </mesh>
-      {/* Floating ring */}
       <mesh ref={ringRef} position={[0, 3, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[4, 0.2, 8, 32]} />
-        <meshStandardMaterial 
-          color={color} 
-          emissive={emissive} 
-          emissiveIntensity={3}
-          toneMapped={false}
-        />
+        <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={3} toneMapped={false} />
       </mesh>
     </group>
   )
 }
 
-export function Environment() {
+function ProceduralFallback() {
   return (
     <>
-      <color attach="background" args={['#050510']} />
-      <fog attach="fog" args={['#050510', 0.015]} />
+      <color attach="background" args={['#0b0f14']} />
+      <fog attach="fog" args={['#0b0f14', 0.015]} />
 
-      {/* Ground - highly visible */}
-      <RigidBody type="fixed" colliders="cuboid">
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-          <planeGeometry args={[500, 500]} />
-          <meshStandardMaterial 
-            color="#1a0a2e" 
-            roughness={0.8}
-            metalness={0.2}
-          />
-        </mesh>
-      </RigidBody>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
+        <planeGeometry args={[500, 500]} />
+        <meshStandardMaterial color="#0b0f14" roughness={0.8} metalness={0.2} />
+      </mesh>
 
-      {/* Visible grid - Drei Grid with strong colors */}
       <Grid
         position={[0, 0.01, 0]}
         args={[500, 500]}
         cellSize={2}
         cellThickness={1}
-        cellColor="#442266"
+        cellColor="#ff00ff"
         sectionSize={10}
         sectionThickness={1.5}
-        sectionColor="#8844cc"
+        sectionColor="#00ffff"
         fadeDistance={100}
         fadeStrength={1}
         followCamera={false}
         infiniteGrid={true}
       />
 
-      {/* Zone markers */}
       {ZONES.map((zone, i) => (
         <ZoneMarker key={i} pos={zone.pos} color={zone.color} emissive={zone.emissive} />
       ))}
 
-      {/* Neon point lights at each zone */}
-      <pointLight position={[-25, 8, -25]} color="#cc44ff" intensity={15} distance={60} castShadow />
-      <pointLight position={[25, 8, -25]} color="#44ccff" intensity={15} distance={60} castShadow />
-      <pointLight position={[-25, 8, 25]} color="#ff44aa" intensity={15} distance={60} castShadow />
-      <pointLight position={[25, 8, 25]} color="#44ffaa" intensity={15} distance={60} castShadow />
+      <pointLight position={[-25, 8, -25]} color="#ff00ff" intensity={15} distance={60} castShadow />
+      <pointLight position={[25, 8, -25]} color="#00ffff" intensity={15} distance={60} castShadow />
+      <pointLight position={[-25, 8, 25]} color="#33ff00" intensity={15} distance={60} castShadow />
+      <pointLight position={[25, 8, 25]} color="#ff6600" intensity={15} distance={60} castShadow />
+      <pointLight position={[0, 8, -40]} color="#ffff00" intensity={15} distance={60} castShadow />
 
-      {/* Additional scene lights - not as aggressive as before */}
-      <hemisphereLight args={['#8866cc', '#221133', 0.5]} />
+      <hemisphereLight args={['#0b0f14', '#0b0f14', 0.5]} />
       <directionalLight
         position={[30, 50, 20]}
         intensity={1}
@@ -102,3 +83,50 @@ export function Environment() {
     </>
   )
 }
+
+export function Environment() {
+  const { scene } = useThree()
+  const [modelError, setModelError] = useState(false)
+  let gltf = null
+
+  try {
+    gltf = useGLTF('/models/environment.glb', true, true, (loader) => {
+      const dracoLoader = new DRACOLoader()
+      dracoLoader.setDecoderPath('/draco/')
+      loader.setDRACOLoader(dracoLoader)
+
+      const ktx2Loader = new KTX2Loader()
+      ktx2Loader.setTranscoderPath('/basis/')
+      ktx2Loader.detectSupport(scene)
+      loader.setKTX2Loader(ktx2Loader)
+    })
+  } catch (e) {
+    console.warn('[Environment] Model load error:', e.message)
+    setModelError(true)
+  }
+
+  useEffect(() => {
+    if (gltf) {
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+    }
+  }, [gltf])
+
+  if (modelError || !gltf) {
+    return <ProceduralFallback />
+  }
+
+  return (
+    <>
+      <color attach="background" args={['#050510']} />
+      <fog attach="fog" args={['#050510', 0.015]} />
+      <primitive object={gltf.scene} />
+    </>
+  )
+}
+
+useGLTF.preload('/models/environment.glb')

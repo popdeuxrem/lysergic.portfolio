@@ -1,35 +1,10 @@
 import { Canvas } from '@react-three/fiber'
-import { Physics, RapierRigidBody } from '@react-three/rapier'
-import { PerspectiveCamera, Html } from '@react-three/drei'
-import { Suspense, useState, useEffect, useRef } from 'react'
+import { PerspectiveCamera } from '@react-three/drei'
+import { useState, useEffect, useRef } from 'react'
 import { Experience } from './components/Experience'
 import { Overlay } from './components/Overlay'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useGameStore } from './store'
-
-function Loader() {
-  return (
-    <Html center>
-      <div style={{
-        background: 'rgba(5, 5, 16, 0.98)',
-        border: '2px solid #ff0000',
-        borderRadius: 8,
-        padding: '32px 48px',
-        fontFamily: 'monospace',
-        color: '#ff0000',
-        textAlign: 'center',
-        minWidth: 320
-      }}>
-        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: 12 }}>
-          3D_LOADING_ERROR: CHECK_ASSET_PATHS
-        </div>
-        <div style={{ fontSize: '0.8rem', color: '#888' }}>
-          If you see this, Suspense is failing
-        </div>
-      </div>
-    </Html>
-  )
-}
 
 function DefaultLights() {
   return (
@@ -66,42 +41,7 @@ function AtomicTest() {
   )
 }
 
-// OptionalPhysics - wraps Physics so scene renders even if Rapier fails
-function OptionalPhysics({ children }) {
-  const [physicsReady, setPhysicsReady] = useState(true)
-  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    // Give physics 5 seconds to initialize
-    const timer = setTimeout(() => {
-      if (!physicsReady) {
-        console.warn('[Physics] Timeout waiting for Rapier - rendering without physics')
-        setPhysicsReady(true)
-      }
-    }, 5000)
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (error) {
-    console.warn('[Physics] Rapier failed:', error)
-    return <>{children}</>
-  }
-
-  try {
-    return (
-      <Physics 
-        gravity={[0, -9.81, 0]} 
-        timeStep="vary"
-        onFirstContact={() => console.log('[Physics] First contact')}
-      >
-        {children}
-      </Physics>
-    )
-  } catch (e) {
-    console.warn('[Physics] Failed to initialize:', e)
-    return <>{children}</>
-  }
-}
 
 export default function App() {
   const setReady = useGameStore(s => s.setReady)
@@ -149,12 +89,8 @@ export default function App() {
           {/* Atomic Render Test - proves Canvas works */}
           <AtomicTest />
           
-          {/* Physics wrapped in Suspense with error handling */}
-          <Suspense fallback={<Loader />}>
-            <OptionalPhysics>
-              <Experience started={started} />
-            </OptionalPhysics>
-          </Suspense>
+          {/* Experience - renders without Suspense */}
+          <Experience started={started} />
         </Canvas>
       </div>
       <Overlay started={started} onStart={() => setStarted(true)} />

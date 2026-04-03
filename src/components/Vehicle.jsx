@@ -1,155 +1,142 @@
-import { useRef, useEffect, useState } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { RigidBody, useRapier } from '@react-three/rapier'
+import { useRef, useState, useEffect, Suspense } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useGLTF } from '@react-three/drei'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 import { useGameStore } from '../store'
 
-const keysDown = {}
+const keysDown = { forward: false, backward: false, left: false, right: false, brake: false }
 
 if (typeof window !== 'undefined') {
-  const keyMap = {
-    KeyW: 'forward', ArrowUp: 'forward',
-    KeyS: 'backward', ArrowDown: 'backward',
-    KeyA: 'left', ArrowLeft: 'left',
-    KeyD: 'right', ArrowRight: 'right',
-    ControlLeft: 'brake', KeyB: 'brake',
-    ShiftLeft: 'boost',
-  }
-  window.addEventListener('keydown', e => { if (keyMap[e.code]) keysDown[keyMap[e.code]] = true })
-  window.addEventListener('keyup', e => { if (keyMap[e.code]) keysDown[keyMap[e.code]] = false })
+  window.addEventListener('keydown', e => {
+    if (e.code === 'KeyW' || e.code === 'ArrowUp') keysDown.forward = true
+    if (e.code === 'KeyS' || e.code === 'ArrowDown') keysDown.backward = true
+    if (e.code === 'KeyA' || e.code === 'ArrowLeft') keysDown.left = true
+    if (e.code === 'KeyD' || e.code === 'ArrowRight') keysDown.right = true
+    if (e.code === 'ControlLeft' || e.code === 'KeyB') keysDown.brake = true
+  })
+  window.addEventListener('keyup', e => {
+    if (e.code === 'KeyW' || e.code === 'ArrowUp') keysDown.forward = false
+    if (e.code === 'KeyS' || e.code === 'ArrowDown') keysDown.backward = false
+    if (e.code === 'KeyA' || e.code === 'ArrowLeft') keysDown.left = false
+    if (e.code === 'KeyD' || e.code === 'ArrowRight') keysDown.right = false
+    if (e.code === 'ControlLeft' || e.code === 'KeyB') keysDown.brake = false
+  })
+}
+
+function FallbackCar() {
+  return (
+    <group>
+      <mesh castShadow position={[0, 0, 0]}>
+        <boxGeometry args={[2.2, 0.8, 4.5]} />
+        <meshStandardMaterial color="#ff00ff" emissive="#ff00ff" emissiveIntensity={0.8} toneMapped={false} />
+      </mesh>
+      <mesh castShadow position={[0, 0.7, -0.3]}>
+        <boxGeometry args={[1.8, 0.7, 2.2]} />
+        <meshStandardMaterial color="#220044" metalness={0.6} roughness={0.3} />
+      </mesh>
+      {[[-1.2, -0.4, 1.5], [1.2, -0.4, 1.5], [-1.2, -0.4, -1.5], [1.2, -0.4, -1.5]].map((pos, i) => (
+        <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.4, 0.4, 0.35, 16]} />
+          <meshStandardMaterial color="#111111" roughness={0.9} />
+        </mesh>
+      ))}
+      <mesh position={[-0.7, 0.2, 2.3]}>
+        <sphereGeometry args={[0.15]} />
+        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
+      </mesh>
+      <mesh position={[0.7, 0.2, 2.3]}>
+        <sphereGeometry args={[0.15]} />
+        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
+      </mesh>
+      <mesh position={[-0.7, 0.2, -2.3]}>
+        <sphereGeometry args={[0.15]} />
+        <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
+      </mesh>
+      <mesh position={[0.7, 0.2, -2.3]}>
+        <sphereGeometry args={[0.15]} />
+        <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
+      </mesh>
+      <pointLight position={[-0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
+      <pointLight position={[0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
+      <pointLight position={[-0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
+      <pointLight position={[0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
+    </group>
+  )
 }
 
 export function Vehicle() {
-  const chassisRef = useRef()
-  const { rapier, world } = useRapier()
+  const groupRef = useRef()
+  const { scene } = useThree()
   const setCarPosition = useGameStore(s => s.setCarPosition)
   const setSpeed = useGameStore(s => s.setSpeed)
-  const [vehicle, setVehicle] = useState(null)
+  const velocity = useRef({ x: 0, y: 0, z: 0 })
+  const rotation = useRef(0)
+  const [modelError, setModelError] = useState(false)
 
-  useEffect(() => {
-    if (!chassisRef.current || !world) return
+  let gltf = null
+  try {
+    gltf = useGLTF('/models/car.glb', true, true, (loader) => {
+      const dracoLoader = new DRACOLoader()
+      dracoLoader.setDecoderPath('/draco/')
+      loader.setDRACOLoader(dracoLoader)
 
-    try {
-      const chassis = chassisRef.current.raw()
-      const controller = world.createVehicleController(chassis)
+      const ktx2Loader = new KTX2Loader()
+      ktx2Loader.setTranscoderPath('/basis/')
+      ktx2Loader.detectSupport(scene)
+      loader.setKTX2Loader(ktx2Loader)
+    })
+  } catch (e) {
+    console.warn('[Vehicle] Model load error:', e.message)
+    setModelError(true)
+  }
 
-      const wheelPositions = [
-        { x: -1.2, y: -0.4, z: 1.5 },
-        { x:  1.2, y: -0.4, z: 1.5 },
-        { x: -1.2, y: -0.4, z: -1.5 },
-        { x:  1.2, y: -0.4, z: -1.5 },
-      ]
+  useFrame((_, delta) => {
+    if (!groupRef.current) return
 
-      wheelPositions.forEach(pos => {
-        controller.addWheel(
-          { x: pos.x, y: pos.y, z: pos.z },
-          { x: 0, y: -1, z: 0 },
-          { x: 0, y: 0, z: 1 },
-          0.4,
-          0.35
-        )
-      })
+    const acceleration = 15
+    const maxSpeed = 20
+    const turnSpeed = 2
+    const friction = 0.98
 
-      controller.setWheelSuspensionStiffness(0, 15)
-      controller.setWheelMaxSuspensionTravel(0, 0.3)
-      setVehicle(controller)
-      console.log('[Vehicle] Physics initialized ✓')
-    } catch (e) {
-      console.warn('[Vehicle] Physics failed:', e)
+    if (keysDown.forward) {
+      velocity.current.z -= acceleration * delta
     }
-  }, [world])
+    if (keysDown.backward) {
+      velocity.current.z += acceleration * delta * 0.5
+    }
 
-  useFrame(() => {
-    if (!chassisRef.current) return
-    const chassis = chassisRef.current.raw()
-    if (!chassis) return
+    const speed = Math.abs(velocity.current.z)
+    if (keysDown.left && speed > 0.1) {
+      rotation.current += turnSpeed * delta
+    }
+    if (keysDown.right && speed > 0.1) {
+      rotation.current -= turnSpeed * delta
+    }
 
-    const pos = chassis.translation()
-    const vel = chassis.linvel()
-    setCarPosition({ x: pos.x, y: pos.y, z: pos.z })
-    setSpeed(Math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2))
+    velocity.current.z *= friction
+    const clampedSpeed = Math.max(Math.min(velocity.current.z, maxSpeed), -maxSpeed)
+    setSpeed(Math.abs(clampedSpeed))
 
-    if (!vehicle) return
+    groupRef.current.rotation.y = rotation.current
+    groupRef.current.position.z += velocity.current.z
 
-    const engineForce = keysDown.forward ? 800 : keysDown.backward ? -400 : 0
-    const steerAngle = keysDown.left ? 0.5 : keysDown.right ? -0.5 : 0
-    const brakeForce = keysDown.brake ? 200 : 0
-
-    vehicle.setWheelSteering(0, steerAngle)
-    vehicle.setWheelSteering(1, steerAngle)
-    vehicle.setWheelEngineForce(2, engineForce)
-    vehicle.setWheelEngineForce(3, engineForce)
-
-    for (let i = 0; i < 4; i++) vehicle.setWheelBrake(i, brakeForce)
-
-    vehicle.updateVehicle(1 / 60)
+    setCarPosition({
+      x: groupRef.current.position.x,
+      y: groupRef.current.position.y,
+      z: groupRef.current.position.z
+    })
   })
 
   return (
-    <RigidBody
-      ref={chassisRef}
-      type="dynamic"
-      colliders="cuboid"
-      mass={800}
-      position={[0, 2, 0]}
-      linearDamping={0.5}
-      angularDamping={0.8}
-    >
-      <group>
-        {/* Main body - bright pink with emissive glow */}
-        <mesh castShadow position={[0, 0, 0]}>
-          <boxGeometry args={[2.2, 0.8, 4.5]} />
-          <meshStandardMaterial 
-            color="#ff00ff" 
-            emissive="#ff00ff" 
-            emissiveIntensity={0.8}
-            toneMapped={false}
-          />
-        </mesh>
-        
-        {/* Cabin */}
-        <mesh castShadow position={[0, 0.7, -0.3]}>
-          <boxGeometry args={[1.8, 0.7, 2.2]} />
-          <meshStandardMaterial 
-            color="#220044" 
-            metalness={0.6}
-            roughness={0.3}
-          />
-        </mesh>
-
-        {/* Wheels - visible cylinders */}
-        {[[-1.2, -0.4, 1.5], [1.2, -0.4, 1.5], [-1.2, -0.4, -1.5], [1.2, -0.4, -1.5]].map((pos, i) => (
-          <mesh key={i} position={pos} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.4, 0.4, 0.35, 16]} />
-            <meshStandardMaterial color="#111111" roughness={0.9} />
-          </mesh>
-        ))}
-
-        {/* Headlights - white glowing */}
-        <mesh position={[-0.7, 0.2, 2.3]}>
-          <sphereGeometry args={[0.15]} />
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
-        </mesh>
-        <mesh position={[0.7, 0.2, 2.3]}>
-          <sphereGeometry args={[0.15]} />
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={3} toneMapped={false} />
-        </mesh>
-
-        {/* Taillights - red glowing */}
-        <mesh position={[-0.7, 0.2, -2.3]}>
-          <sphereGeometry args={[0.15]} />
-          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
-        </mesh>
-        <mesh position={[0.7, 0.2, -2.3]}>
-          <sphereGeometry args={[0.15]} />
-          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2} toneMapped={false} />
-        </mesh>
-
-        {/* Car lights */}
-        <pointLight position={[-0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
-        <pointLight position={[0.7, 0.3, 2.5]} color="#ffffff" intensity={8} distance={20} />
-        <pointLight position={[-0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
-        <pointLight position={[0.7, 0.3, -2.5]} color="#ff0000" intensity={4} distance={10} />
-      </group>
-    </RigidBody>
+    <group ref={groupRef} position={[0, 0.5, 0]}>
+      {modelError || !gltf ? (
+        <FallbackCar />
+      ) : (
+        <primitive object={gltf.scene} scale={1} />
+      )}
+    </group>
   )
 }
+
+useGLTF.preload('/models/car.glb')
