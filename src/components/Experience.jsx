@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { Vehicle } from './Vehicle'
 import { Environment } from './Environment'
 import { CameraRig } from './CameraRig'
@@ -9,12 +8,10 @@ export function Experience() {
   return (
     <>
       <CameraRig />
-      <Suspense fallback={null}>
-        <Environment />
-        <Vehicle />
-        <TriggerZones />
-        <PostProcessing />
-      </Suspense>
+      <Environment />
+      <Vehicle />
+      <TriggerZones />
+      <PostProcessing />
     </>
   )
 }
