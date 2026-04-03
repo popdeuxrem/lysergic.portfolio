@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <style>
+      .bg{fill:#0B0F14}.node{fill:#111827;stroke:#8B5CF6;stroke-width:1.4}.ext{fill:#111827;stroke:#22D3EE;stroke-width:1.4;stroke-dasharray:7 5}.data{fill:#111827;stroke:#F59E0B;stroke-width:1.4}.text{fill:#E5E7EB;font:16px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.sub{fill:#9CA3AF;font:12px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.line{fill:none;stroke:#22D3EE;stroke-width:1.3;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="800"/>
+  <text x="60" y="60" class="text">automated-campaign-delivery-engine / flow</text>
+
+  <rect x="90" y="170" rx="14" ry="14" width="180" height="80" class="node"/><text x="180" y="217" text-anchor="middle" class="text">Template Engine</text>
+  <rect x="320" y="170" rx="14" ry="14" width="180" height="80" class="node"/><text x="410" y="217" text-anchor="middle" class="text">Asset Embedder</text>
+  <rect x="550" y="170" rx="14" ry="14" width="180" height="80" class="node"/><text x="640" y="217" text-anchor="middle" class="text">Message Builder</text>
+  <rect x="780" y="170" rx="14" ry="14" width="180" height="80" class="ext"/><text x="870" y="217" text-anchor="middle" class="text">Mailgun API</text>
+  <rect x="780" y="450" rx="14" ry="14" width="180" height="80" class="data"/><text x="870" y="497" text-anchor="middle" class="text">Delivery Logs</text>
+  <rect x="1010" y="450" rx="14" ry="14" width="180" height="80" class="node"/><text x="1100" y="497" text-anchor="middle" class="text">Analytics Layer</text>
+
+  <path class="line" d="M270 210H320M500 210H550M730 210H780M870 250V450M960 490H1010"/>
+</svg>
