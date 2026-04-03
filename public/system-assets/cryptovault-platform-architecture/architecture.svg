@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06080d"/>
+      <stop offset="50%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#05070b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(99,132,255,0.20)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <rect width="100%" height="100%" fill="url(#glow)"/>
+  <g opacity="0.18">
+    <path d="M0 120 H1600 M0 240 H1600 M0 360 H1600 M0 480 H1600 M0 600 H1600 M0 720 H1600 M0 840 H1600" stroke="#9fb6ff" stroke-width="1"/>
+    <path d="M120 0 V1000 M320 0 V1000 M520 0 V1000 M720 0 V1000 M920 0 V1000 M1120 0 V1000 M1320 0 V1000 M1520 0 V1000" stroke="#9fb6ff" stroke-width="1"/>
+  </g>
+  <text x="110" y="110" font-family="Inter, Arial, sans-serif" font-size="52" fill="rgba(240,245,255,0.98)">CryptoVault Platform Architecture</text>
+  <text x="110" y="152" font-family="JetBrains Mono, monospace" font-size="22" fill="rgba(123,147,193,0.95)">Derived architecture diagram from authored system content</text>
+  <path d="M340 320.0 C 400 320.0, 360 240.0, 420 240.0" stroke="rgba(122,162,255,0.45)" stroke-width="4" fill="none"/><path d="M640 240.0 C 700 240.0, 700 320.0, 760 320.0" stroke="rgba(122,162,255,0.45)" stroke-width="4" fill="none"/><path d="M980 320.0 C 1040 320.0, 1020 240.0, 1080 240.0" stroke="rgba(122,162,255,0.45)" stroke-width="4" fill="none"/><path d="M1300 240.0 C 1360 240.0, 1300 320.0, 1360 320.0" stroke="rgba(122,162,255,0.45)" stroke-width="4" fill="none"/>
+  <g>
+        <rect x="120" y="260" rx="26" ry="26" width="220" height="120" fill="rgba(10,14,22,0.78)" stroke="rgba(255,255,255,0.14)"/>
+        <circle cx="148" cy="290" r="6" fill="rgba(132,240,200,0.9)"/>
+        <text x="148" y="332" font-family="Inter, Arial, sans-serif" font-size="26" fill="rgba(235,241,255,0.96)">Route segments</text>
+      </g><g>
+        <rect x="420" y="180" rx="26" ry="26" width="220" height="120" fill="rgba(10,14,22,0.78)" stroke="rgba(255,255,255,0.14)"/>
+        <circle cx="448" cy="210" r="6" fill="rgba(132,240,200,0.9)"/>
+        <text x="448" y="252" font-family="Inter, Arial, sans-serif" font-size="26" fill="rgba(235,241,255,0.96)">Interface layer</text>
+      </g><g>
+        <rect x="760" y="260" rx="26" ry="26" width="220" height="120" fill="rgba(10,14,22,0.78)" stroke="rgba(255,255,255,0.14)"/>
+        <circle cx="788" cy="290" r="6" fill="rgba(132,240,200,0.9)"/>
+        <text x="788" y="332" font-family="Inter, Arial, sans-serif" font-size="26" fill="rgba(235,241,255,0.96)">Shared primitives</text>
+      </g><g>
+        <rect x="1080" y="180" rx="26" ry="26" width="220" height="120" fill="rgba(10,14,22,0.78)" stroke="rgba(255,255,255,0.14)"/>
+        <circle cx="1108" cy="210" r="6" fill="rgba(132,240,200,0.9)"/>
+        <text x="1108" y="252" font-family="Inter, Arial, sans-serif" font-size="26" fill="rgba(235,241,255,0.96)">Motion isolation</text>
+      </g><g>
+        <rect x="1360" y="260" rx="26" ry="26" width="220" height="120" fill="rgba(10,14,22,0.78)" stroke="rgba(255,255,255,0.14)"/>
+        <circle cx="1388" cy="290" r="6" fill="rgba(132,240,200,0.9)"/>
+        <text x="1388" y="332" font-family="Inter, Arial, sans-serif" font-size="26" fill="rgba(235,241,255,0.96)">Preview verification</text>
+      </g>
+  <rect x="140" y="820" rx="18" ry="18" width="380" height="62" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/><text x="164" y="860" font-family="JetBrains Mono, monospace" font-size="24" fill="rgba(188,200,223,0.92)">Typed boundaries</text><rect x="560" y="820" rx="18" ry="18" width="380" height="62" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/><text x="584" y="860" font-family="JetBrains Mono, monospace" font-size="24" fill="rgba(188,200,223,0.92)">Static-first rendering</text><rect x="980" y="820" rx="18" ry="18" width="380" height="62" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.10)"/><text x="1004" y="860" font-family="JetBrains Mono, monospace" font-size="24" fill="rgba(188,200,223,0.92)">Defensive fallbacks</text>
+</svg>

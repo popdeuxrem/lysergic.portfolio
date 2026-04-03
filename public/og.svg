@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#050816"/>
+  <rect x="48" y="48" width="1104" height="534" rx="32" fill="#0C1124" stroke="rgba(137,167,255,0.25)"/>
+  <circle cx="240" cy="180" r="10" fill="#89A7FF"/>
+  <circle cx="430" cy="310" r="10" fill="#89A7FF"/>
+  <circle cx="620" cy="170" r="10" fill="#89A7FF"/>
+  <circle cx="820" cy="340" r="10" fill="#89A7FF"/>
+  <circle cx="980" cy="210" r="10" fill="#89A7FF"/>
+  <path d="M240 180L430 310L820 340" stroke="#89A7FF" stroke-opacity="0.4"/>
+  <path d="M430 310L620 170L980 210" stroke="#89A7FF" stroke-opacity="0.4"/>
+  <text x="88" y="470" fill="#EEF2FF" font-family="Arial, sans-serif" font-size="56" font-weight="700">Lysergic</text>
+  <text x="88" y="522" fill="#89A7FF" font-family="Arial, sans-serif" font-size="28">Systems &amp; Automation Architect</text>
+</svg>
